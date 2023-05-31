@@ -1,0 +1,27 @@
+.previewData {
+  width: 100%;
+  border: 1px solid #333;
+  min-height: 270px;
+  padding: 4px;
+  border-radius: 4px;
+}
+.table {
+  width: 100%;
+}
+.dropdown {
+  width: 90%;
+  border: 1px solid #333;
+  border-radius: 4px;
+  height: 28px;
+}
+.box {
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.table,
+td,
+th {
+  border: 1px solid #333;
+  padding: 8px;
+}

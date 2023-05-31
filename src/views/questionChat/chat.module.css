@@ -14,6 +14,14 @@
   margin: 20px auto;
 }
 
+.startQuestionWrapper > input {
+  width: 100%;
+  height: 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding-left: 6px;
+}
+
 .questionLoader {
   width: 80px;
   border: none;
@@ -41,7 +49,13 @@
 .micIcon {
   display: flex;
   justify-content: center;
+}
+
+.micOffText {
+  text-align: center;
   margin-bottom: 30px;
+  font-size: 12px;
+  color: #19b3f8;
 }
 
 .micIcon > svg {
