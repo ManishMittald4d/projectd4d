@@ -4,15 +4,11 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styles from "./kycForm.module.css";
 
-const Pages = () => {
-  const [data, setData] = useState();
-  const handleApi = async () => {
-    const resp = await axios.get("");
-    return resp.data;
-  };
+const Pages = ({ pageData, illustration }) => {
+  const [data, setData] = useState(pageData?.Story);
   useEffect(() => {
-    handleApi();
-  }, []);
+    setData(pageData?.Story);
+  }, [pageData]);
 
   return (
     <>
@@ -27,7 +23,7 @@ const Pages = () => {
           Pages
         </Typography>
         <Box>
-          <table class={`table table-bordered border-dark ${styles.table}`}>
+          <table className={`table table-bordered border-dark ${styles.table}`}>
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -42,9 +38,20 @@ const Pages = () => {
                 data.map((item, index) => (
                   <tr key={index}>
                     <th>{index + 1}</th>
-                    <td>{item.name}</td>
-                    <td>{item.name}</td>
+                    <td>{item.PageText}</td>
+                    <td>
+                      {illustration ? (
+                        <img style={{ width: "100px" }} src={illustration} />
+                      ) : (
+                        "N/A"
+                      )}
+                    </td>
                     <td>@{item.name}</td>
+                    <td>
+                      <button>Edit</button>
+                      <br />
+                      <button>Delete</button>
+                    </td>
                   </tr>
                 ))
               ) : (

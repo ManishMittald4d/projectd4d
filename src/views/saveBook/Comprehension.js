@@ -3,15 +3,11 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styles from "./kycForm.module.css";
 
-const Comprehension = () => {
-  const [data, setData] = useState();
-  const handleApi = async () => {
-    const resp = await axios.get("");
-    return resp.data;
-  };
+const Comprehension = ({ pageData }) => {
+  const [data, setData] = useState(pageData?.Story);
   useEffect(() => {
-    handleApi();
-  }, []);
+    setData(pageData?.Story);
+  }, [pageData]);
 
   return (
     <>
@@ -26,7 +22,7 @@ const Comprehension = () => {
           Comprehension
         </Typography>
         <Box>
-          <table class={`table table-bordered border-dark ${styles.table}`}>
+          <table className={`table table-bordered border-dark ${styles.table}`}>
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -39,14 +35,22 @@ const Comprehension = () => {
             </thead>
             <tbody>
               {data ? (
-                data.map((item, index) => (
-                  <tr key={index}>
-                    <th>{index + 1}</th>
-                    <td>{item.name}</td>
-                    <td>{item.name}</td>
-                    <td>{item.name}</td>
-                  </tr>
-                ))
+                data.map((item, index) =>
+                  item.Questions.map((value, i) => (
+                    <tr key={value.Question}>
+                      <th>{i + 1}</th>
+                      <td>{value.Question}</td>
+                      <td>{value.Answer}</td>
+                      <td>{index + 1}</td>
+                      <td>{"@"}</td>
+                      <td>
+                        <button>Edit</button>
+                        <br />
+                        <button>Delete</button>
+                      </td>
+                    </tr>
+                  ))
+                )
               ) : (
                 <tr>
                   <td colSpan={6} style={{ textAlign: "center" }}>

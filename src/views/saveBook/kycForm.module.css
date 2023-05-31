@@ -25,3 +25,17 @@ th {
   border: 1px solid #333;
   padding: 8px;
 }
+
+.Imagebox_main {
+  border: 1px solid #333;
+  padding: 8px;
+  border-radius: 8px;
+  width: 136px;
+  margin-inline: 8px;
+}
+
+.loader > div:first-child > div {
+  position: fixed;
+  left: 50%;
+  margin-top: 50vh;
+}

@@ -6,12 +6,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./kycForm.module.css";
-import axios from "axios";
 
 const Page1 = (props) => {
-  const { getbookData } = props;
+  const { getbookData, newPreview } = props;
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [pageData, setPageData] = useState({
     topic: "Write a story on latest trending topic.",
@@ -30,6 +29,15 @@ const Page1 = (props) => {
     imageCount: 1,
     text: "",
   });
+  const [preview, setPreview] = useState("");
+
+  useEffect(() => {
+    setPreview(
+      `${pageData.topic} Maximum syllables in the words shall be ${pageData.max_syllabus}. Story shall be good for child in grade ${pageData.grade}. Maximum words in the story shall be ${pageData.max_words}. Story shall be broken into pages and each page shall have maximum ${pageData.senetence_per_Page} sentences. There shall be at least 5 pages. Locale of the story shall be ${pageData.lang} ${pageData.local}. Create minimum 1 question per page. Do not create more than ${pageData.max_questions} questions in total on all pages. Create ${pageData.sight_words} sight words maximum. Create ${pageData.vocab_words} vocab words maximum.`
+    );
+  }, [pageData]);
+
+  console.log("newPreview", newPreview);
 
   return (
     <>
@@ -206,7 +214,10 @@ const Page1 = (props) => {
                       id="instruction"
                       className={styles.previewData}
                       name="previewData"
-                      value={`${pageData.topic} Maximum syllables in the words shall be ${pageData.max_syllabus}. Story shall be good for child in grade ${pageData.grade}. Maximum words in the story shall be ${pageData.max_words}. Story shall be broken into pages and each page shall have maximum ${pageData.senetence_per_Page} sentences. There shall be at least 5 pages. Locale of the story shall be ${pageData.lang} ${pageData.local}. Create minimum 1 question per page. Do not create more than ${pageData.max_questions} questions in total on all pages. Create ${pageData.sight_words} sight words maximum. Create ${pageData.vocab_words} vocab words maximum.`}
+                      value={preview}
+                      onChange={(e) => {
+                        setPreview(e.target.value);
+                      }}
                     ></textarea>
                   </Grid>
                 </Grid>
@@ -404,7 +415,6 @@ const Page1 = (props) => {
                           <Checkbox
                             checked={coverImageData.getCoverImage}
                             onChange={(e) => {
-                              console.log(e);
                               setCoverImageData({
                                 ...coverImageData,
                                 getCoverImage: e.target.checked,
@@ -490,26 +500,67 @@ const Page1 = (props) => {
                 </Grid>
               </Grid>
             </Grid>
-            <Button
-              style={{
-                marginTop: "5%",
-                marginBottom: "2%",
-                backgroundColor: "#40E0D0",
-                color: "white",
-                font: "16px",
-                marginLeft: "25%",
-              }}
-              onClick={() => {
-                getbookData({
-                  imageCount: coverImageData.imagecount,
-                  imageFormat: "url",
-                  imageSize: "512x512",
-                  text: coverImageData.text,
-                });
-              }}
-            >
-              Create with OpenAI-Raw Type
-            </Button>
+            <Box>
+              {newPreview && (
+                <Button
+                  style={{
+                    marginTop: "5%",
+                    marginBottom: "2%",
+                    backgroundColor: "#40E0D0",
+                    color: "white",
+                    font: "16px",
+                    marginRight: "24px",
+                  }}
+                  onClick={() => {
+                    if (!coverImageData.text && coverImageData.getCoverImage) {
+                      return alert("Please enter image title first");
+                    }
+                    getbookData(
+                      coverImageData.getCoverImage,
+                      {
+                        imageCount: coverImageData.imageCount,
+                        imageFormat: "url",
+                        imageSize: "512x512",
+                        text: coverImageData.text,
+                      },
+                      {
+                        Text: `${newPreview} Render all output in JSON format as below {\"Title\":[\"string\",\"string\"],\"Tags\":[\"string\",\"string\"],\"Genre\":[\"string\",\"string\"],\"Grade\":int,\"Story\":{[{\"PageText\":\"string\",\"Questions\":[{\"Question\":\"string\",\"Answer\":\"string\"}],}]},\"Vocabulary\":[\"string\",\"string\"],\"SightWords:[\"string\",\"string\"],\"ARScore\":int,\"LexileLevelMin\":\"string\",\"LexileLevelMax\":\"string\"}`,
+                      }
+                    );
+                  }}
+                >
+                  Regenerate All-Raw Type
+                </Button>
+              )}
+              <Button
+                style={{
+                  marginTop: "5%",
+                  marginBottom: "2%",
+                  backgroundColor: "#40E0D0",
+                  color: "white",
+                  font: "16px",
+                }}
+                onClick={() => {
+                  if (!coverImageData.text && coverImageData.getCoverImage) {
+                    return alert("Please enter image title first");
+                  }
+                  getbookData(
+                    coverImageData.getCoverImage,
+                    {
+                      imageCount: coverImageData.imageCount,
+                      imageFormat: "url",
+                      imageSize: "512x512",
+                      text: coverImageData.text,
+                    },
+                    {
+                      Text: `${preview} Render all output in JSON format as below {\"Title\":[\"string\",\"string\"],\"Tags\":[\"string\",\"string\"],\"Genre\":[\"string\",\"string\"],\"Grade\":int,\"Story\":{[{\"PageText\":\"string\",\"Questions\":[{\"Question\":\"string\",\"Answer\":\"string\"}],}]},\"Vocabulary\":[\"string\",\"string\"],\"SightWords:[\"string\",\"string\"],\"ARScore\":int,\"LexileLevelMin\":\"string\",\"LexileLevelMax\":\"string\"}`,
+                    }
+                  );
+                }}
+              >
+                Create with OpenAI-Raw Type
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Box>
