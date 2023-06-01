@@ -13,7 +13,7 @@ import {
   MdOutlineRadioButtonUnchecked,
 } from "react-icons/md";
 
-export default function Imagebox({ url, onCheck, value }) {
+export default function Imagebox({ url, value }) {
   return (
     <div className={styles.Imagebox_main}>
       <img src={url} />

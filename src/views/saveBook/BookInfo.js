@@ -13,7 +13,7 @@ import styles from "./kycForm.module.css";
 
 const BookInfo = (props) => {
   const { coverImages, aiFormData, getNewPreview } = props;
-  const [coverImage, setCoverImage] = useState(coverImages[0]);
+  const [coverImage, setCoverImage] = useState(coverImages[0] || "");
   const [imageRow, setImageRow] = useState({ start: 0, end: 4 });
   const [formData, setFormData] = useState(aiFormData || {});
   let coverImagesRow = coverImages.slice(imageRow.start, imageRow.end);
@@ -30,6 +30,10 @@ const BookInfo = (props) => {
       body: body,
     });
   }, [aiFormData]);
+
+  useEffect(() => {
+    setCoverImage(coverImages[0]);
+  }, [coverImages]);
 
   return (
     <>
@@ -246,10 +250,7 @@ const BookInfo = (props) => {
               <Grid item xs={2}>
                 <Typography>Cover Image</Typography>
                 <Box>
-                  <img
-                    width={"130px"}
-                    src={coverImage || coverImagesRow[0]}
-                  ></img>
+                  <img width={"130px"} src={coverImage || coverImages[0]}></img>
                 </Box>
               </Grid>
               <Grid item xs={4}>
@@ -320,22 +321,17 @@ const BookInfo = (props) => {
             <Grid container xs={7} style={{ marginBottom: "16px" }}>
               <FormControl FormControl>
                 <RadioGroup
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue={coverImagesRow[0]}
+                  aria-labelledby="radio-buttons-group-label"
                   name="radio-buttons-group"
                   style={{ display: "flex", flexDirection: "row" }}
+                  value={coverImage}
                   onChange={(e) => {
                     setCoverImage(e.target.value);
                   }}
                 >
                   {coverImagesRow.length > 0 &&
                     coverImagesRow.map((item) => (
-                      <Imagebox
-                        key={item}
-                        url={item}
-                        onCheck={() => {}}
-                        value={item}
-                      />
+                      <Imagebox key={item} url={item} value={item} />
                     ))}
                 </RadioGroup>
               </FormControl>

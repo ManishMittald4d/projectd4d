@@ -20,24 +20,48 @@ const Page1 = (props) => {
     max_words: 500,
     max_syllabus: 3,
     senetence_per_Page: 3,
+    get_max_questions: true,
     max_questions: 3,
+    get_vocab_words: true,
     vocab_words: 3,
+    get_sight_words: true,
     sight_words: 3,
   });
   const [coverImageData, setCoverImageData] = useState({
     getCoverImage: false,
     imageCount: 1,
     text: "",
+    illustration: true,
   });
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
     setPreview(
-      `${pageData.topic} Maximum syllables in the words shall be ${pageData.max_syllabus}. Story shall be good for child in grade ${pageData.grade}. Maximum words in the story shall be ${pageData.max_words}. Story shall be broken into pages and each page shall have maximum ${pageData.senetence_per_Page} sentences. There shall be at least 5 pages. Locale of the story shall be ${pageData.lang} ${pageData.local}. Create minimum 1 question per page. Do not create more than ${pageData.max_questions} questions in total on all pages. Create ${pageData.sight_words} sight words maximum. Create ${pageData.vocab_words} vocab words maximum.`
+      `${pageData.topic} Maximum syllables in the words shall be ${
+        pageData.max_syllabus
+      }. Story shall be good for child in grade ${
+        pageData.grade
+      }. Maximum words in the story shall be ${
+        pageData.max_words
+      }. Story shall be broken into pages and each page shall have maximum ${
+        pageData.senetence_per_Page
+      } sentences. There shall be at least 5 pages. Locale of the story shall be ${
+        pageData.lang
+      } ${pageData.local}. ${
+        pageData.get_max_questions
+          ? `Create minimum 1 question per page. Do not create more than ${pageData.max_questions} questions in total on all pages.`
+          : ""
+      }${
+        pageData.get_sight_words
+          ? ` Create ${pageData.sight_words} sight words maximum.`
+          : ""
+      }${
+        pageData.get_vocab_words
+          ? ` Create ${pageData.vocab_words} vocab words maximum.`
+          : ""
+      }`
     );
   }, [pageData]);
-
-  console.log("newPreview", newPreview);
 
   return (
     <>
@@ -286,8 +310,14 @@ const Page1 = (props) => {
                       <Typography>
                         <Checkbox
                           {...label}
-                          defaultChecked
                           style={{ padding: 0 }}
+                          checked={pageData.get_max_questions}
+                          onChange={(e) => {
+                            setPageData({
+                              ...pageData,
+                              get_max_questions: e.target.checked,
+                            });
+                          }}
                         />
                         Comprehension
                         <br />
@@ -335,7 +365,16 @@ const Page1 = (props) => {
                   <Grid container xs={12}>
                     <Grid item xs={5} style={{ alignSelf: "center" }}>
                       <Typography>
-                        <Checkbox {...label} defaultChecked />
+                        <Checkbox
+                          {...label}
+                          checked={pageData.get_vocab_words}
+                          onChange={(e) => {
+                            setPageData({
+                              ...pageData,
+                              get_vocab_words: e.target.checked,
+                            });
+                          }}
+                        />
                         Vocab words
                       </Typography>
                     </Grid>
@@ -345,7 +384,7 @@ const Page1 = (props) => {
                       style={{ display: "flex", alignItems: "center" }}
                     >
                       <Typography style={{ paddingRight: "6px" }}>
-                        Max{" "}
+                        Max
                       </Typography>
                       <TextField
                         type="number"
@@ -371,7 +410,16 @@ const Page1 = (props) => {
                   <Grid container xs={12}>
                     <Grid item xs={5} style={{ alignSelf: "center" }}>
                       <Typography>
-                        <Checkbox {...label} defaultChecked />
+                        <Checkbox
+                          {...label}
+                          checked={pageData.get_sight_words}
+                          onChange={(e) => {
+                            setPageData({
+                              ...pageData,
+                              get_sight_words: e.target.checked,
+                            });
+                          }}
+                        />
                         Sight words
                       </Typography>
                     </Grid>
@@ -494,7 +542,16 @@ const Page1 = (props) => {
                       </Grid>
                     </Grid>
                     <Typography>
-                      <Checkbox /> Add Image Illustrations to All Pages
+                      <Checkbox
+                        checked={coverImageData.illustration}
+                        onChange={(e) => {
+                          setCoverImageData({
+                            ...coverImageData,
+                            illustration: e.target.checked,
+                          });
+                        }}
+                      />
+                      Add Image Illustrations to All Pages
                     </Typography>
                   </Box>
                 </Grid>
@@ -544,18 +601,9 @@ const Page1 = (props) => {
                   if (!coverImageData.text && coverImageData.getCoverImage) {
                     return alert("Please enter image title first");
                   }
-                  getbookData(
-                    coverImageData.getCoverImage,
-                    {
-                      imageCount: coverImageData.imageCount,
-                      imageFormat: "url",
-                      imageSize: "512x512",
-                      text: coverImageData.text,
-                    },
-                    {
-                      Text: `${preview} Render all output in JSON format as below {\"Title\":[\"string\",\"string\"],\"Tags\":[\"string\",\"string\"],\"Genre\":[\"string\",\"string\"],\"Grade\":int,\"Story\":{[{\"PageText\":\"string\",\"Questions\":[{\"Question\":\"string\",\"Answer\":\"string\"}],}]},\"Vocabulary\":[\"string\",\"string\"],\"SightWords:[\"string\",\"string\"],\"ARScore\":int,\"LexileLevelMin\":\"string\",\"LexileLevelMax\":\"string\"}`,
-                    }
-                  );
+                  getbookData(coverImageData, {
+                    Text: `${preview} Render all output in JSON format as below {\"Title\":[\"string\",\"string\"],\"Tags\":[\"string\",\"string\"],\"Genre\":[\"string\",\"string\"],\"Grade\":int,\"Story\":{[{\"PageText\":\"string\",\"Questions\":[{\"Question\":\"string\",\"Answer\":\"string\"}],}]},\"Vocabulary\":[\"string\",\"string\"],\"SightWords:[\"string\",\"string\"],\"ARScore\":int,\"LexileLevelMin\":\"string\",\"LexileLevelMax\":\"string\"}`,
+                  });
                 }}
               >
                 Create with OpenAI-Raw Type

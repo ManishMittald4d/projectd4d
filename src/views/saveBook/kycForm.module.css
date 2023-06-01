@@ -39,3 +39,21 @@ th {
   left: 50%;
   margin-top: 50vh;
 }
+
+.exportBtn {
+  margin-top: 5% !important;
+  margin-bottom: 2% !important;
+  background-color: #40e0d0 !important;
+  color: white !important;
+  font: 16px !important;
+  margin-left: 24px !important;
+}
+.exportBtn:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+.crossIcon {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+}

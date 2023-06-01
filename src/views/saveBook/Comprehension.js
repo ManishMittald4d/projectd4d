@@ -1,9 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styles from "./kycForm.module.css";
 
-const Comprehension = ({ pageData }) => {
+const Comprehension = ({ pageData, exportJson }) => {
   const [data, setData] = useState(pageData?.Story);
   useEffect(() => {
     setData(pageData?.Story);
