@@ -239,8 +239,3 @@ img.report-img {
   display: flex;
   align-items: center;
 }
-
-input::-webkit-inner-spin-button,
-::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-}

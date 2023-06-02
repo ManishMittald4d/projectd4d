@@ -1,41 +1,60 @@
-// import { Box, Typography } from "@mui/material";
 import {
   Box,
+  Button,
   ButtonGroup,
   Grid,
-  Modal,
   SwipeableDrawer,
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styles from "./kycForm.module.css";
 import { MdCancel } from "react-icons/md";
+import LoadingOverlay from "react-loading-overlay";
 
 const Pages = ({
   pageData,
   illustration,
   showIllustration,
   generateImage,
-  editingImage,
+  loading,
+  updateExportableJson,
 }) => {
   const [data, setData] = useState(pageData?.Story);
-  const [editing, setEditing] = useState(true);
+  const [editing, setEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [imageTitle, setImageTitle] = useState("");
+  const [newImage, setNewImage] = useState("");
+  const [newText, setNewText] = useState("");
 
   useEffect(() => {
     let arr = [];
-    pageData?.Story?.forEach((item) => {
-      let value = {
-        ...item,
-        illustration: illustration,
-      };
-      arr.push(value);
-    });
-    setData(arr);
+    if (showIllustration) {
+      pageData?.Story?.forEach((item) => {
+        let value = {
+          ...item,
+          illustration: illustration,
+        };
+        arr.push(value);
+      });
+      setData(arr);
+    } else {
+      pageData?.Story?.forEach((item) => {
+        let value = {
+          ...item,
+          illustration: "",
+        };
+        arr.push(value);
+      });
+      setData(arr);
+    }
   }, [pageData]);
+
+  useEffect(() => {
+    if (editing && pageData.Story) {
+      setNewImage(illustration);
+    }
+  }, [illustration]);
 
   return (
     <>
@@ -67,7 +86,7 @@ const Pages = ({
                     <th>{index + 1}</th>
                     <td>{item.PageText}</td>
                     <td>
-                      {showIllustration ? (
+                      {item.illustration ? (
                         <img
                           style={{ width: "100px" }}
                           src={item.illustration}
@@ -82,12 +101,22 @@ const Pages = ({
                         onClick={() => {
                           setEditing(true);
                           setEditIndex(index);
+                          setNewImage("");
+                          setNewText(item.PageText);
+                          setNewImage(item.illustration);
                         }}
                       >
                         Edit
                       </button>
                       <br />
-                      <button>Delete</button>
+                      <button
+                        onClick={() => {
+                          data.splice(index, 1);
+                          setData([...data]);
+                        }}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -101,124 +130,166 @@ const Pages = ({
             </tbody>
           </table>
         </Box>
-        {/* {
+        {editing && (
           <>
             <SwipeableDrawer
               anchor={"top"}
               open={true}
-              style={{ width: "100%", backgroundColor: "red" }}
+              className={styles.drawer}
+              style={{ width: "100%" }}
               // onClose={setEditing(false)}
               // onOpen={setEditing(true)}
             >
-              <MdCancel
-                className={styles.crossIcon}
-                onClick={() => setEditing(false)}
-              />
-              <Box style={{ padding: "40px" }}>
-                <Typography variant="h5">Edit Page:</Typography>
-                <Typography>Number#:</Typography>
-                <TextField
-                  type="text"
-                  variant="outlined"
-                  value={editIndex + 1}
-                  disabled
-                  inputProps={{
-                    style: {
-                      height: "28px",
-                      padding: 0,
-                      paddingLeft: "4px",
-                    },
-                  }}
+              <LoadingOverlay
+                active={loading}
+                spinner
+                className={loading ? styles.loader : ""}
+              >
+                <MdCancel
+                  className={styles.crossIcon}
+                  onClick={() => setEditing(false)}
                 />
-                <Typography>Page Text:</Typography>
-                <textarea
-                  style={{
-                    border: "1px solid #333",
-                    minHeight: "300px",
-                    minWidth: "40%",
-                  }}
-                  value={"My name is Manish Mittal"}
-                />
-                <Grid container spacing={2}>
-                  <Grid item xs={2}>
-                    <Typography>Illustration</Typography>
-                    <Box>
-                      <img width={"130px"} src={illustration}></img>
-                    </Box>
-                    {console.log("illustration", illustration)}
+                <Box style={{ padding: "40px" }}>
+                  <Typography variant="h5">Edit Page:</Typography>
+                  <Typography>Number#:</Typography>
+                  <TextField
+                    type="text"
+                    variant="outlined"
+                    value={editIndex + 1}
+                    disabled
+                    inputProps={{
+                      style: {
+                        height: "28px",
+                        padding: 0,
+                        paddingLeft: "4px",
+                      },
+                    }}
+                  />
+                  <Typography>Page Text:</Typography>
+                  <textarea
+                    style={{
+                      border: "1px solid #333",
+                      minHeight: "300px",
+                      minWidth: "40%",
+                    }}
+                    value={newText}
+                    onchange={(e) => {
+                      setNewText(e.target.value);
+                    }}
+                  />
+                  <Grid container spacing={2}>
+                    <Grid item xs={2}>
+                      <Typography>Illustration</Typography>
+                      <Box>
+                        <img width={"130px"} src={newImage}></img>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography>Cover Image:</Typography>
+                      <TextField
+                        type="text"
+                        variant="outlined"
+                        fullWidth
+                        value={imageTitle}
+                        onChange={(e) => {
+                          setImageTitle(e.target.value);
+                        }}
+                        inputProps={{
+                          style: {
+                            height: "3px",
+                            border: "1px solid black",
+                          },
+                        }}
+                      />
+                      <Typography>Art Theme:</Typography>
+                      <Box>
+                        <select
+                          className={styles.dropdown}
+                          style={{ width: "100%", marginTop: "8px" }}
+                        >
+                          <option></option>
+                          <option>Digital Art</option>
+                          <option>3D Render</option>
+                          <option>Water Color</option>
+                          <option>Oil Painting</option>
+                        </select>
+                      </Box>
+                      <ButtonGroup sx={{ marginBottom: "7%" }}>
+                        <button
+                          style={{
+                            backgroundColor: "#40E0D0",
+                            marginRight: "4%",
+                            color: "white",
+                            font: "16px",
+                          }}
+                          onClick={() => {
+                            if (!imageTitle) {
+                              return alert("Please enter image title");
+                            }
+                            generateImage(
+                              {
+                                imageCount: "1",
+                                imageFormat: "url",
+                                imageSize: "512x512",
+                                text: imageTitle,
+                              },
+                              editing
+                            );
+                          }}
+                        >
+                          Regenerate
+                        </button>
+                        <button
+                          style={{
+                            backgroundColor: "#40E0D0",
+                            color: "white",
+                            font: "16px",
+                          }}
+                          onClick={() => {
+                            var input = document.createElement("input");
+                            input.type = "file";
+                            input.style.display = "none";
+                            input.onchange = function (e) {
+                              var file = e.target.files[0];
+                              const selectedImage = URL.createObjectURL(file);
+                              setNewImage(selectedImage);
+                            };
+                            document.body.appendChild(input);
+                            input.click();
+                            document.body.removeChild(input);
+                          }}
+                        >
+                          Upload
+                        </button>
+                      </ButtonGroup>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={4}>
-                    <Typography>Cover Image:</Typography>
-                    <TextField
-                      type="text"
-                      variant="outlined"
-                      fullWidth
-                      value={imageTitle}
-                      onChange={(e) => {
-                        setImageTitle(e.target.value);
-                      }}
-                      inputProps={{
-                        style: {
-                          height: "3px",
-                          border: "1px solid black",
-                        },
-                      }}
-                    />
-                    <Typography>Art Theme:</Typography>
-                    <Box>
-                      <select
-                        className={styles.dropdown}
-                        style={{ width: "100%", marginTop: "8px" }}
-                      >
-                        <option></option>
-                        <option>Digital Art</option>
-                        <option>3D Render</option>
-                        <option>Water Color</option>
-                        <option>Oil Painting</option>
-                      </select>
-                    </Box>
-                    <ButtonGroup sx={{ marginBottom: "7%" }}>
-                      <button
-                        style={{
-                          backgroundColor: "#40E0D0",
-                          marginRight: "4%",
-                          color: "white",
-                          font: "16px",
-                        }}
-                        onClick={() => {
-                          if (!imageTitle) {
-                            return alert("Please enter image title");
-                          }
-                          generateImage(
-                            {
-                              imageCount: "1",
-                              imageFormat: "url",
-                              imageSize: "512x512",
-                              text: imageTitle,
-                            },
-                            editing
-                          );
-                        }}
-                      >
-                        Regenerate
-                      </button>
-                      <button
-                        style={{
-                          backgroundColor: "#40E0D0",
-                          color: "white",
-                          font: "16px",
-                        }}
-                      >
-                        Upload
-                      </button>
-                    </ButtonGroup>
-                  </Grid>
-                </Grid>
-              </Box>
+                  <Button
+                    style={{
+                      backgroundColor: "#40E0D0",
+                      marginRight: "4%",
+                      color: "white",
+                      font: "16px",
+                    }}
+                    onClick={() => {
+                      const item = {
+                        ...data[editIndex],
+                        illustration: newImage,
+                        PageText: newText,
+                      };
+                      data.splice(editIndex, 1, item);
+                      setData([...data]);
+                      setEditing(false);
+                      updateExportableJson(data);
+                    }}
+                  >
+                    UPDATE
+                  </Button>
+                </Box>
+              </LoadingOverlay>
             </SwipeableDrawer>
           </>
-        } */}
-        {/* <textarea value={data[editIndex].PageText} />  */}
+        )}
       </Box>
     </>
   );

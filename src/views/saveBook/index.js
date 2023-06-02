@@ -8,6 +8,7 @@ import LoadingOverlay from "react-loading-overlay";
 import styles from "./kycForm.module.css";
 import { Button } from "@mui/material";
 import BaseService from "services/BaseService";
+import AIBaseService from "services/AIBaseService";
 
 function SaveBook() {
   const [coverImages, setCoverImages] = useState([]);
@@ -17,8 +18,9 @@ function SaveBook() {
   const [coverImageData, setCoverImageData] = useState({});
   const [exportableJSON, setExportableJSON] = useState({});
   const [editingImage, setEditingImage] = useState(false);
+  const [newImage, setNewImage] = useState("");
 
-  const generateImage = async (coverImageData, editing) => {
+  const generateImage = async (coverImageData, editing = false) => {
     setLoading(true);
     setEditingImage(editing);
     const bookReqData = {
@@ -32,9 +34,13 @@ function SaveBook() {
       bookReqData
     );
     console.log("cover Images", resp.data);
-    setCoverImages(resp.data.Data.Urls);
+    if (editing) {
+      setNewImage(resp.data.Data.Urls);
+    } else {
+      setCoverImages(resp.data.Data.Urls);
+    }
     setLoading(false);
-    setEditingImage(false);
+    // setEditingImage(false);
   };
 
   const getFormData = async (formData) => {
@@ -44,11 +50,24 @@ function SaveBook() {
       "https://predev-api.readabilitytutor.com/AI/v1/ChatCompletions",
       formReqData
     );
-    const response = {
-      ...formResp.data.Data,
-      LexileLevelMin: formResp.data.Data.LexileLevelMin.replace(/[^\d.-]/g, ""),
-      LexileLevelMax: formResp.data.Data.LexileLevelMax.replace(/[^\d.-]/g, ""),
-    };
+
+    // const formResp = await AIBaseService({
+    //   url: "ChatCompletions",
+    //   method: "POST",
+    //   data: formReqData,
+    // });
+
+    const data = formResp.data.Data;
+    if (!data || formResp.status === 500) {
+      return getFormData(formData);
+    }
+    const response = data
+      ? {
+          ...data,
+          LexileLevelMin: data.LexileLevelMin.replace(/[^\d.-]/g, ""),
+          LexileLevelMax: data.LexileLevelMax.replace(/[^\d.-]/g, ""),
+        }
+      : data;
     setAiFormData(response);
     console.log("formResp", formResp.data);
     setLoading(false);
@@ -66,7 +85,7 @@ function SaveBook() {
     setCoverImageData(coverImageData);
     try {
       if (coverImageData.getCoverImage) {
-        await generateImage();
+        await generateImage(coverImageData);
       }
       await getFormData(formData);
     } catch (err) {
@@ -92,8 +111,8 @@ function SaveBook() {
       Story,
     } = aiFormData;
 
-    const bookURL = coverImages[0].split("/");
-    const fileName = bookURL.pop();
+    const bookURL = coverImages[0]?.split("/") || "";
+    const fileName = bookURL && bookURL?.pop();
     const docList = [
       {
         fileName: fileName,
@@ -108,7 +127,7 @@ function SaveBook() {
 
     Story.length > 0 &&
       Story.forEach((story, index) => {
-        const title = `Chapter ${index} : ${Title[0]}`;
+        const title = `Chapter ${index + 1} : ${Title[0]}`;
         ExtraList.push({
           Title: title,
           PageNumber: index + 1,
@@ -150,8 +169,8 @@ function SaveBook() {
       BookId: "",
       Credits: "Capstone",
       OptionalWords: "Manushkin,Fran",
-      LexileLevelStart: "100",
-      LexileLevelEnd: "120",
+      LexileLevelStart: LexileLevelMin,
+      LexileLevelEnd: LexileLevelMax,
       IsActive: true,
       DocumentList: docList,
       ExtraJSON: "",
@@ -160,7 +179,6 @@ function SaveBook() {
       BookURL: coverImages[0],
     };
     setExportableJSON(json);
-    console.log("Manish Mittal Exporting this json: ", json);
 
     const resp = await BaseService({
       url: "/Book/ePubImportSave",
@@ -178,7 +196,17 @@ function SaveBook() {
     console.log("jsonresp", resp.data);
   };
 
-  console.log("coverImages", coverImages);
+  const updateExportableJson = (newData) => {
+    console.log("newData", newData);
+    if (newData.illustration) {
+      delete newData["illustration"];
+    }
+    setAiFormData({
+      ...aiFormData,
+      Story: newData,
+    });
+    console.log("aiFormData", aiFormData);
+  };
 
   return (
     <div>
@@ -196,12 +224,16 @@ function SaveBook() {
           />
           <Pages
             pageData={aiFormData}
-            illustration={coverImages[0]}
+            illustration={editingImage ? newImage[0] : coverImages[0]}
             showIllustration={coverImageData.illustration}
             generateImage={generateImage}
-            editingImage={editingImage}
+            loading={loading}
+            updateExportableJson={updateExportableJson}
           />
-          <Comprehension pageData={aiFormData} exportJson={exportJson} />
+          <Comprehension
+            pageData={aiFormData}
+            updateExportableJson={updateExportableJson}
+          />
           <Button
             className={styles.exportBtn}
             disabled={aiFormData?.Title ? false : true}
@@ -209,6 +241,8 @@ function SaveBook() {
           >
             Export JSON
           </Button>
+          {console.log({ aiFormData })}
+          {console.log({ aiFormData })}
         </>
       </LoadingOverlay>
     </div>

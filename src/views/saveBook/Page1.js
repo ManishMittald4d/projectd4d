@@ -84,6 +84,8 @@ const Page1 = (props) => {
                 width: "778px",
                 border: "1px solid #333",
                 minHeight: "70px",
+                padding: "4px",
+                marginBottom: "16px",
               }}
               value={pageData.topic}
               onChange={(e) => {
@@ -280,7 +282,7 @@ const Page1 = (props) => {
                       <Grid item xs={6}>
                         <Typography>Senetence/Page</Typography>
                       </Grid>
-                      <Grid item xs={3}>
+                      <Grid item xs={5}>
                         <TextField
                           type="number"
                           variant="outlined"
@@ -294,7 +296,6 @@ const Page1 = (props) => {
                           inputProps={{
                             style: {
                               height: "3px",
-                              width: "95px",
                               border: "1px solid black",
                             },
                           }}
