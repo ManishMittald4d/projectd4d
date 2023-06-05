@@ -61,3 +61,22 @@ th {
 .drawer > div {
   height: 100%;
 }
+
+.box {
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.boxInput input {
+  border: 1px solid #333;
+  border-radius: 4px;
+  height: 28px;
+  padding: 0;
+  padding-left: 4px;
+}
+
+.boxInput input:disabled {
+  opacity: 0.5;
+  background-color: floralwhite;
+}

@@ -66,6 +66,7 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
                               Answer: value.Answer,
                             });
                           }}
+                          style={{ color: "blue" }}
                         >
                           Edit
                         </button>
@@ -75,6 +76,7 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
                             data[index].Questions.splice(i, 1);
                             setData([...data]);
                           }}
+                          style={{ color: "blue" }}
                         >
                           Delete
                         </button>

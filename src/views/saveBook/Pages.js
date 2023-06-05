@@ -20,7 +20,7 @@ const Pages = ({
   loading,
   updateExportableJson,
 }) => {
-  const [data, setData] = useState(pageData?.Story);
+  const [data, setData] = useState(pageData?.Story || []);
   const [editing, setEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [imageTitle, setImageTitle] = useState("");
@@ -55,6 +55,8 @@ const Pages = ({
       setNewImage(illustration);
     }
   }, [illustration]);
+
+  console.log("new image data", data);
 
   return (
     <>
@@ -104,7 +106,9 @@ const Pages = ({
                           setNewImage("");
                           setNewText(item.PageText);
                           setNewImage(item.illustration);
+                          setImageTitle("");
                         }}
+                        style={{ color: "blue" }}
                       >
                         Edit
                       </button>
@@ -113,7 +117,9 @@ const Pages = ({
                         onClick={() => {
                           data.splice(index, 1);
                           setData([...data]);
+                          updateExportableJson(data);
                         }}
+                        style={{ color: "blue" }}
                       >
                         Delete
                       </button>
@@ -168,12 +174,12 @@ const Pages = ({
                   <Typography>Page Text:</Typography>
                   <textarea
                     style={{
-                      border: "1px solid #333",
                       minHeight: "300px",
                       minWidth: "40%",
                     }}
+                    className={styles.box}
                     value={newText}
-                    onchange={(e) => {
+                    onChange={(e) => {
                       setNewText(e.target.value);
                     }}
                   />
@@ -226,6 +232,7 @@ const Pages = ({
                             if (!imageTitle) {
                               return alert("Please enter image title");
                             }
+                            setNewImage("");
                             generateImage(
                               {
                                 imageCount: "1",
@@ -233,7 +240,7 @@ const Pages = ({
                                 imageSize: "512x512",
                                 text: imageTitle,
                               },
-                              editing
+                              1
                             );
                           }}
                         >
@@ -278,9 +285,10 @@ const Pages = ({
                         PageText: newText,
                       };
                       data.splice(editIndex, 1, item);
+                      console.log("updated image data", data);
                       setData([...data]);
                       setEditing(false);
-                      updateExportableJson(data);
+                      // updateExportableJson(data);
                     }}
                   >
                     UPDATE

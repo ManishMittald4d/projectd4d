@@ -82,11 +82,10 @@ const Page1 = (props) => {
             <textarea
               style={{
                 width: "778px",
-                border: "1px solid #333",
                 minHeight: "70px",
-                padding: "4px",
                 marginBottom: "16px",
               }}
+              className={styles.box}
               value={pageData.topic}
               onChange={(e) => {
                 setPageData({
@@ -98,7 +97,7 @@ const Page1 = (props) => {
           </Box>
           <Box
             sx={{
-              border: "1.5px solid #333",
+              border: "1px solid #333",
               padding: "16px",
             }}
           >
@@ -106,7 +105,10 @@ const Page1 = (props) => {
               <Grid
                 container
                 xs={5}
-                style={{ paddingRight: "16px", height: "fit-content" }}
+                style={{
+                  paddingRight: "16px",
+                  height: "fit-content",
+                }}
               >
                 <Typography style={{ fontWeight: "bold", marginBottom: "8px" }}>
                   Scope form OpenAI
@@ -190,17 +192,12 @@ const Page1 = (props) => {
                         type="text"
                         variant="outlined"
                         value={pageData.max_words}
+                        className={`${styles.boxInput}`}
                         onChange={(e) => {
                           setPageData({
                             ...pageData,
                             max_words: e.target.value,
                           });
-                        }}
-                        inputProps={{
-                          style: {
-                            height: "28px",
-                            padding: 0,
-                          },
                         }}
                       />
                     </Grid>
@@ -220,12 +217,7 @@ const Page1 = (props) => {
                             max_syllabus: e.target.value,
                           });
                         }}
-                        inputProps={{
-                          style: {
-                            padding: 0,
-                            height: "28px",
-                          },
-                        }}
+                        className={styles.boxInput}
                       />
                     </Grid>
                   </Grid>
@@ -275,14 +267,18 @@ const Page1 = (props) => {
                     Genres:
                   </Typography>
                   <Box
-                    sx={{ border: "1px solid black", width: "auto" }}
+                    sx={{
+                      border: "1px solid black",
+                      width: "auto",
+                      borderRadius: "4px",
+                    }}
                     p={0.5}
                   >
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={6} style={{ alignSelf: "center" }}>
                         <Typography>Senetence/Page</Typography>
                       </Grid>
-                      <Grid item xs={5}>
+                      <Grid item xs={6}>
                         <TextField
                           type="number"
                           variant="outlined"
@@ -293,12 +289,7 @@ const Page1 = (props) => {
                               senetence_per_Page: e.target.value,
                             });
                           }}
-                          inputProps={{
-                            style: {
-                              height: "3px",
-                              border: "1px solid black",
-                            },
-                          }}
+                          className={styles.boxInput}
                         />
                       </Grid>
                     </Grid>
@@ -340,13 +331,7 @@ const Page1 = (props) => {
                             max_questions: e.target.value,
                           })
                         }
-                        inputProps={{
-                          style: {
-                            height: "28px",
-                            padding: 0,
-                            border: "1px solid black",
-                          },
-                        }}
+                        className={styles.boxInput}
                       />
                     </Grid>
                   </Grid>
@@ -398,13 +383,7 @@ const Page1 = (props) => {
                             vocab_words: e.target.value,
                           });
                         }}
-                        inputProps={{
-                          style: {
-                            height: "28px",
-                            padding: 0,
-                            border: "1px solid black",
-                          },
-                        }}
+                        className={styles.boxInput}
                       />
                     </Grid>
                   </Grid>
@@ -442,13 +421,7 @@ const Page1 = (props) => {
                             sight_words: e.target.value,
                           });
                         }}
-                        inputProps={{
-                          style: {
-                            height: "28px",
-                            padding: 0,
-                            border: "1px solid black",
-                          },
-                        }}
+                        className={styles.boxInput}
                       />
                     </Grid>
                   </Grid>
@@ -456,7 +429,7 @@ const Page1 = (props) => {
                     mt={7}
                     width={"100%"}
                     height={"auto"}
-                    sx={{ border: "1px solid black" }}
+                    className={styles.box}
                   >
                     <Grid container>
                       <Grid item xs={5}>
@@ -473,12 +446,12 @@ const Page1 = (props) => {
                           Cover Image
                         </Typography>
                         <Typography
-                          style={{ marginLeft: "9px", paddingBlock: "9px" }}
+                          style={{ marginLeft: "9px", paddingBlock: "4px" }}
                         >
                           Art Theme:
                         </Typography>
                         <Typography
-                          style={{ marginLeft: "9px", paddingBlock: "9px" }}
+                          style={{ marginLeft: "9px", paddingTop: "9px" }}
                         >
                           Images Count:
                         </Typography>
@@ -495,13 +468,7 @@ const Page1 = (props) => {
                             });
                           }}
                           variant="outlined"
-                          inputProps={{
-                            style: {
-                              height: "28px",
-                              padding: 0,
-                              border: "1px solid black",
-                            },
-                          }}
+                          className={styles.boxInput}
                         />
                         <Box>
                           <select
@@ -574,12 +541,13 @@ const Page1 = (props) => {
                       return alert("Please enter image title first");
                     }
                     getbookData(
-                      coverImageData.getCoverImage,
                       {
+                        getCoverImage: coverImageData.getCoverImage,
                         imageCount: coverImageData.imageCount,
                         imageFormat: "url",
                         imageSize: "512x512",
                         text: coverImageData.text,
+                        illustration: coverImageData.illustration,
                       },
                       {
                         Text: `${newPreview} Render all output in JSON format as below {\"Title\":[\"string\",\"string\"],\"Tags\":[\"string\",\"string\"],\"Genre\":[\"string\",\"string\"],\"Grade\":int,\"Story\":{[{\"PageText\":\"string\",\"Questions\":[{\"Question\":\"string\",\"Answer\":\"string\"}],}]},\"Vocabulary\":[\"string\",\"string\"],\"SightWords:[\"string\",\"string\"],\"ARScore\":int,\"LexileLevelMin\":\"string\",\"LexileLevelMax\":\"string\"}`,
@@ -592,11 +560,10 @@ const Page1 = (props) => {
               )}
               <Button
                 style={{
-                  marginTop: "5%",
-                  marginBottom: "2%",
-                  backgroundColor: "#40E0D0",
-                  color: "white",
-                  font: "16px",
+                  marginTop: "40px",
+                  marginBottom: "16px",
+                  backgroundColor: "#40e0d0",
+                  color: "#fff",
                 }}
                 onClick={() => {
                   if (!coverImageData.text && coverImageData.getCoverImage) {

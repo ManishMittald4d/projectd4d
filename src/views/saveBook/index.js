@@ -17,10 +17,12 @@ function SaveBook() {
   const [loading, setLoading] = useState(false);
   const [coverImageData, setCoverImageData] = useState({});
   const [exportableJSON, setExportableJSON] = useState({});
-  const [editingImage, setEditingImage] = useState(false);
+  const [editingImage, setEditingImage] = useState(null);
   const [newImage, setNewImage] = useState("");
+  const [exportingJson, setExportingJson] = useState(false);
+  const [apiCallNumber, setApiCallNumber] = useState(0);
 
-  const generateImage = async (coverImageData, editing = false) => {
+  const generateImage = async (coverImageData, editing = null) => {
     setLoading(true);
     setEditingImage(editing);
     const bookReqData = {
@@ -58,7 +60,8 @@ function SaveBook() {
     // });
 
     const data = formResp.data.Data;
-    if (!data || formResp.status === 500) {
+    if ((!data || formResp.status === 500) && apiCallNumber < 4) {
+      setApiCallNumber(apiCallNumber + 1);
       return getFormData(formData);
     }
     const response = data
@@ -78,6 +81,7 @@ function SaveBook() {
       });
 
     getNewPreview(body);
+    setApiCallNumber(0);
   };
 
   const getbookData = async (coverImageData, formData) => {
@@ -99,6 +103,7 @@ function SaveBook() {
   };
 
   const exportJson = async () => {
+    setExportingJson(true);
     const {
       ARScore,
       Genre,
@@ -192,12 +197,11 @@ function SaveBook() {
         FingerPrintKey: "readability",
       },
     });
-
+    setExportingJson(false);
     console.log("jsonresp", resp.data);
   };
 
   const updateExportableJson = (newData) => {
-    console.log("newData", newData);
     if (newData.illustration) {
       delete newData["illustration"];
     }
@@ -205,8 +209,9 @@ function SaveBook() {
       ...aiFormData,
       Story: newData,
     });
-    console.log("aiFormData", aiFormData);
   };
+
+  console.log(" Manish");
 
   return (
     <div>
@@ -218,13 +223,15 @@ function SaveBook() {
         <>
           <Page1 getbookData={getbookData} newPreview={newPreview} />
           <BookInfo
-            coverImages={coverImages}
+            coverImages={editingImage == 2 ? newImage : coverImages}
             aiFormData={aiFormData}
             getNewPreview={getNewPreview}
+            generateImage={generateImage}
+            loading={loading}
           />
           <Pages
             pageData={aiFormData}
-            illustration={editingImage ? newImage[0] : coverImages[0]}
+            illustration={editingImage == 1 ? newImage[0] : coverImages[0]}
             showIllustration={coverImageData.illustration}
             generateImage={generateImage}
             loading={loading}
@@ -236,13 +243,11 @@ function SaveBook() {
           />
           <Button
             className={styles.exportBtn}
-            disabled={aiFormData?.Title ? false : true}
+            disabled={aiFormData?.Title || !exportingJson ? false : true}
             onClick={exportJson}
           >
             Export JSON
           </Button>
-          {console.log({ aiFormData })}
-          {console.log({ aiFormData })}
         </>
       </LoadingOverlay>
     </div>
