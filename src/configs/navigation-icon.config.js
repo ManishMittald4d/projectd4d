@@ -26,6 +26,7 @@ import {
   HiOutlineCode,
   HiOutlineChat,
 } from "react-icons/hi";
+import { MdOutlineAnalytics } from "react-icons/md";
 
 const navigationIcon = {
   apps: <HiOutlineViewGridAdd />,
@@ -56,6 +57,7 @@ const navigationIcon = {
   utilsDoc: <HiOutlineVariable />,
   changeLog: <HiOutlineCode />,
   QuestionChat: <HiOutlineChat />,
+  analytics: <MdOutlineAnalytics />,
 };
 
 export default navigationIcon;

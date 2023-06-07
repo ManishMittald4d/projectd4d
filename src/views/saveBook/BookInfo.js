@@ -14,8 +14,14 @@ import styles from "./kycForm.module.css";
 import LoadingOverlay from "react-loading-overlay";
 
 const BookInfo = (props) => {
-  const { coverImages, aiFormData, getNewPreview, generateImage, loading } =
-    props;
+  const {
+    coverImages,
+    aiFormData,
+    getNewPreview,
+    generateImage,
+    loading,
+    setAiFormData,
+  } = props;
   const [coverImage, setCoverImage] = useState(
     coverImages[0] ||
       "https://foyr.com/learn/wp-content/uploads/2021/08/design-your-dream-home.jpg"
@@ -55,8 +61,7 @@ const BookInfo = (props) => {
         <Box
           sx={{
             border: "1px solid #333",
-            width: "80%",
-            marginInline: "auto",
+            marginLeft: "2%",
             height: "auto",
             marginTop: "3%",
             paddingTop: "8px",
@@ -70,7 +75,10 @@ const BookInfo = (props) => {
             <Box>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
-                  <Typography> OpenAI id#</Typography>
+                  <Typography className={styles.inputLabel}>
+                    {" "}
+                    OpenAI id#
+                  </Typography>
                   <TextField
                     type="text"
                     variant="outlined"
@@ -84,7 +92,9 @@ const BookInfo = (props) => {
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography>Book Title:</Typography>
+                  <Typography className={styles.inputLabel}>
+                    Book Title:
+                  </Typography>
                   <TextField
                     type="text"
                     variant="outlined"
@@ -101,8 +111,8 @@ const BookInfo = (props) => {
                 </Grid>
               </Grid>
             </Box>
-            <Box>
-              <Typography>Body</Typography>
+            <Box mb={3}>
+              <Typography className={styles.inputLabel}>Body</Typography>
               <textarea
                 value={formData.body}
                 onChange={(e) => {
@@ -112,112 +122,136 @@ const BookInfo = (props) => {
                     body: e.target.value,
                   });
                 }}
+                className={styles.Boxborder}
                 style={{
-                  width: "65%",
-                  border: "1px solid #333",
-                  height: "50vh",
+                  // borderColor:"  1px solid rgb(209 213 219 / var(--tw-border-opacity))",
+
+                  width: "90%",
+                  // border: "1px solid #333",
+                  height: "20vh",
                   padding: "4px",
                   borderRadius: "4px",
                 }}
               ></textarea>
             </Box>
-            <Box>
-              <Typography>AR Score:</Typography>
-              <TextField
-                type="number"
-                variant="outlined"
-                fullWidth
-                value={formData.ARScore}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    ARScore: e.target.value,
-                  });
-                }}
-                className={styles.boxInput}
-              />
-            </Box>
+
             <Box>
               <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography> Lexile Start:</Typography>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    value={formData.LexileLevelMin}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        LexileLevelMin: e.target.value,
-                      });
-                    }}
-                    className={styles.boxInput}
-                  />
+                <Grid item xs={4}>
+                  <Box mb={2}>
+                    <Typography className={styles.inputLabel}>
+                      AR Score:
+                    </Typography>
+                    <TextField
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      value={formData.ARScore}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          ARScore: e.target.value,
+                        });
+                      }}
+                      className={styles.boxInput}
+                    />
+                  </Box>
+                  <Box mb={2}>
+                    <Typography className={styles.inputLabel}>
+                      {" "}
+                      Genres:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      value={formData.Genre}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          Genre: e.target.value,
+                        });
+                      }}
+                      className={styles.boxInput}
+                    />
+                  </Box>
                 </Grid>
-                <Grid item xs={6}>
-                  <Typography>Lexile End:</Typography>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    value={formData.LexileLevelMax}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        LexileLevelMax: e.target.value,
-                      });
-                    }}
-                    className={styles.boxInput}
-                  />
+                <Grid item xs={4}>
+                  <Box mb={2}>
+                    <Typography className={styles.inputLabel}>
+                      {" "}
+                      Lexile Start:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      value={formData.LexileLevelMin}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          LexileLevelMin: e.target.value,
+                        });
+                      }}
+                      className={styles.boxInput}
+                    />
+                  </Box>
+                  <Box mb={2}>
+                    <Typography className={styles.inputLabel}>
+                      Vocab words:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      value={formData.Vocabulary}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          Vocabulary: e.target.value,
+                        });
+                      }}
+                      className={styles.boxInput}
+                    />
+                  </Box>
+                </Grid>
+                <Grid item sx={4}>
+                  <Box mb={2}>
+                    <Typography className={styles.inputLabel}>
+                      Lexile End:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      value={formData.LexileLevelMax}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          LexileLevelMax: e.target.value,
+                        });
+                      }}
+                      className={styles.boxInput}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography className={styles.inputLabel}>
+                      {" "}
+                      Sight words:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      value={formData.SightWords}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          SightWords: e.target.value,
+                        });
+                      }}
+                      className={styles.boxInput}
+                    />
+                  </Box>
                 </Grid>
               </Grid>
             </Box>
-            <Box>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography> Genres:</Typography>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    value={formData.Genre}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        Genre: e.target.value,
-                      });
-                    }}
-                    className={styles.boxInput}
-                  />
-                  <Typography> Sight words:</Typography>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    value={formData.SightWords}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        SightWords: e.target.value,
-                      });
-                    }}
-                    className={styles.boxInput}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography>Vocab words:</Typography>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    value={formData.Vocabulary}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        Vocabulary: e.target.value,
-                      });
-                    }}
-                    className={styles.boxInput}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
+
             <Box>
               <Grid container spacing={2}>
                 <Grid item xs={2}>
@@ -225,12 +259,17 @@ const BookInfo = (props) => {
                   <Box>
                     <img
                       width={"130px"}
-                      src={coverImage || coverImages[0]}
-                    ></img>
+                      src={
+                        coverImage ||
+                        "https://foyr.com/learn/wp-content/uploads/2021/08/design-your-dream-home.jpg"
+                      }
+                    />
                   </Box>
                 </Grid>
                 <Grid item xs={4}>
-                  <Typography>Cover Image:</Typography>
+                  <Typography className={styles.inputLabel}>
+                    Cover Image:
+                  </Typography>
                   <TextField
                     type="text"
                     variant="outlined"
@@ -241,7 +280,9 @@ const BookInfo = (props) => {
                     }}
                     className={styles.boxInput}
                   />
-                  <Typography>Art Theme:</Typography>
+                  <Typography className={styles.inputLabel}>
+                    Art Theme:
+                  </Typography>
                   <Box>
                     <select
                       className={styles.dropdown}

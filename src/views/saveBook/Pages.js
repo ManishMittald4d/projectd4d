@@ -62,8 +62,7 @@ const Pages = ({
     <>
       <Box
         sx={{
-          width: "80%",
-          marginInline: "auto",
+          marginLeft: "2%",
           height: "auto",
         }}
       >
@@ -285,10 +284,9 @@ const Pages = ({
                         PageText: newText,
                       };
                       data.splice(editIndex, 1, item);
-                      console.log("updated image data", data);
                       setData([...data]);
                       setEditing(false);
-                      // updateExportableJson(data);
+                      updateExportableJson(data);
                     }}
                   >
                     UPDATE

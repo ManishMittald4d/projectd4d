@@ -33,7 +33,7 @@ export default function QuestionChat() {
   });
   const [userAnswer, setUserAnswer] = useState("");
   const [isQuestioningCompleted, setIsQuestioningCompleted] = useState(false);
-  const [answerStartedAt, setAnswerStartedAt] = useState();
+  const [answerStartedAt, setAnswerStartedAt] = useState(null);
 
   const recorder = useRef(null); //Recorder
   const [blobURL, setBlobUrl] = useState(null);
@@ -61,11 +61,11 @@ export default function QuestionChat() {
   }, [text]);
 
   const getTextAnswer = async (recordedAnswer) => {
-    setAnswerStartedAt(null);
     if (Date.now() - answerStartedAt > 60000) {
       setRecordingAnswer(1);
       return alert("answer length cannot be longer than 60 seconds");
     }
+    setAnswerStartedAt(null);
     setLoadingAnswer(true);
     try {
       setUserAnswer("");
@@ -246,16 +246,19 @@ export default function QuestionChat() {
   }, [chatPage, isQuestioningCompleted, isSpeaking]);
 
   useEffect(() => {
-    if (!listening && recorder.current.activeStream) {
+    if (!listening && recorder.current.activeStream && recordingAnswer === 2) {
       stopRecording();
     }
-  }, [listening]);
-
-  useEffect(() => {
     return () => {
       setIsSpeaking(false);
+      if (recorder.current.activeStream) {
+        stopRecording();
+      }
+      if (isSpeaking) {
+        handleStop();
+      }
     };
-  }, []);
+  }, [listening]);
 
   return (
     <div

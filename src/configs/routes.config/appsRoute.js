@@ -17,6 +17,12 @@ const appsRoute = [
     component: React.lazy(() => import("views/saveBook")),
     authority: [ADMIN, USER, TEACHER],
   },
+  {
+    key: "appsProject.analytics",
+    path: `/analytics`,
+    component: React.lazy(() => import("views/analytics")),
+    authority: [ADMIN, USER, TEACHER],
+  },
   // ///////////////////
   {
     key: "appsProject.dashboard",

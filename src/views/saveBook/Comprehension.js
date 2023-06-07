@@ -26,8 +26,7 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
     <>
       <Box
         sx={{
-          width: "80%",
-          marginInline: "auto",
+          marginLeft: "2%",
           height: "auto",
         }}
       >
@@ -75,6 +74,7 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
                           onClick={() => {
                             data[index].Questions.splice(i, 1);
                             setData([...data]);
+                            updateExportableJson(data);
                           }}
                           style={{ color: "blue" }}
                         >

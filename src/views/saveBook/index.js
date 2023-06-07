@@ -8,7 +8,6 @@ import LoadingOverlay from "react-loading-overlay";
 import styles from "./kycForm.module.css";
 import { Button } from "@mui/material";
 import BaseService from "services/BaseService";
-import AIBaseService from "services/AIBaseService";
 
 function SaveBook() {
   const [coverImages, setCoverImages] = useState([]);
@@ -116,7 +115,7 @@ function SaveBook() {
       Story,
     } = aiFormData;
 
-    const bookURL = coverImages[0]?.split("/") || "";
+    const bookURL = newImage?.split("/") || coverImages[0]?.split("/") || "";
     const fileName = bookURL && bookURL?.pop();
     const docList = [
       {
@@ -202,6 +201,7 @@ function SaveBook() {
   };
 
   const updateExportableJson = (newData) => {
+    console.log("newdata", newData);
     if (newData.illustration) {
       delete newData["illustration"];
     }
@@ -211,10 +211,8 @@ function SaveBook() {
     });
   };
 
-  console.log(" Manish");
-
   return (
-    <div>
+    <div style={{ marginRight: "2%" }}>
       <LoadingOverlay
         active={loading}
         spinner
@@ -225,6 +223,7 @@ function SaveBook() {
           <BookInfo
             coverImages={editingImage == 2 ? newImage : coverImages}
             aiFormData={aiFormData}
+            setAiFormData={setAiFormData}
             getNewPreview={getNewPreview}
             generateImage={generateImage}
             loading={loading}

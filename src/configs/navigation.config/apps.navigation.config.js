@@ -258,12 +258,24 @@ const appsNavigationConfig = [
         authority: [USER, ADMIN, TEACHER],
         subMenu: [],
       },
+      // For save book
       {
         key: "appcrm.savebook",
         path: "/savebook/",
         title: "Save Book",
         translateKey: "nav.appsCrm.savebook",
         icon: "guide",
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [USER, ADMIN, TEACHER],
+        subMenu: [],
+      },
+      // For analytics
+      {
+        key: "appcrm.analytics",
+        path: "/analytics/",
+        title: "Analytics",
+        translateKey: "nav.appsCrm.analytics",
+        icon: "analytics",
         type: NAV_ITEM_TYPE_ITEM,
         authority: [USER, ADMIN, TEACHER],
         subMenu: [],
