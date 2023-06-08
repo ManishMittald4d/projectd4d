@@ -14,7 +14,6 @@ function SaveBook() {
   const [aiFormData, setAiFormData] = useState({});
   const [newPreview, setNewPreview] = useState("");
   const [loading, setLoading] = useState(false);
-  const [coverImageData, setCoverImageData] = useState({});
   const [exportableJSON, setExportableJSON] = useState({});
   const [editingImage, setEditingImage] = useState(null);
   const [newImage, setNewImage] = useState("");
@@ -41,22 +40,17 @@ function SaveBook() {
       setCoverImages(resp.data.Data.Urls);
     }
     setLoading(false);
+    return resp.data.Data.Urls[0];
     // setEditingImage(false);
   };
 
-  const getFormData = async (formData) => {
+  const getFormData = async (formData, coverImageData, myImage) => {
     setLoading(true);
     const formReqData = formData;
     const formResp = await axios.post(
       "https://predev-api.readabilitytutor.com/AI/v1/ChatCompletions",
       formReqData
     );
-
-    // const formResp = await AIBaseService({
-    //   url: "ChatCompletions",
-    //   method: "POST",
-    //   data: formReqData,
-    // });
 
     const data = formResp.data.Data;
     if ((!data || formResp.status === 500) && apiCallNumber < 4) {
@@ -70,14 +64,25 @@ function SaveBook() {
           LexileLevelMax: data.LexileLevelMax.replace(/[^\d.-]/g, ""),
         }
       : data;
-    setAiFormData(response);
+    // setAiFormData(response);
     console.log("formResp", formResp.data);
     setLoading(false);
     let body = "";
+    let arr = [];
+
     formResp.data.Data.Story &&
       formResp.data.Data.Story.map((item) => {
         body += item.PageText;
+        let value = {
+          ...item,
+          illustration: coverImageData.illustration ? myImage : "",
+        };
+        arr.push(value);
       });
+    setAiFormData({
+      ...response,
+      Story: arr,
+    });
 
     getNewPreview(body);
     setApiCallNumber(0);
@@ -85,12 +90,12 @@ function SaveBook() {
 
   const getbookData = async (coverImageData, formData) => {
     setLoading(true);
-    setCoverImageData(coverImageData);
     try {
+      let myImage = "";
       if (coverImageData.getCoverImage) {
-        await generateImage(coverImageData);
+        myImage = await generateImage(coverImageData);
       }
-      await getFormData(formData);
+      await getFormData(formData, coverImageData, myImage);
     } catch (err) {
       console.log(err);
       setLoading(false);
@@ -231,7 +236,6 @@ function SaveBook() {
           <Pages
             pageData={aiFormData}
             illustration={editingImage == 1 ? newImage[0] : coverImages[0]}
-            showIllustration={coverImageData.illustration}
             generateImage={generateImage}
             loading={loading}
             updateExportableJson={updateExportableJson}

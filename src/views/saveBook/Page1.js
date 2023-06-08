@@ -97,12 +97,12 @@ const Page1 = (props) => {
           <Box
             // className={styles.Boxborder}
             sx={{
-              border: "1px solid #333",
+              // border: "1px solid #333",
               padding: "16px",
             }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={7}>
+              <Grid item xs={12} lg={7} style={{ paddingRight: "20px" }}>
                 <Typography style={{ fontWeight: "bold", marginBottom: "8px" }}>
                   Scope form OpenAI
                 </Typography>
@@ -112,160 +112,185 @@ const Page1 = (props) => {
 
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={4}>
-                        <Box mb={4}>
-                          <Typography className={styles.inputLabel}>
-                            Grade
-                          </Typography>
-                        </Box>
-                        <Box mb={4}>
-                          <Typography className={styles.inputLabel}>
-                            Local
-                          </Typography>
-                        </Box>
-                        <Box mb={3}>
-                          <Typography className={styles.inputLabel}>
-                            Lang
-                          </Typography>
-                        </Box>
+                    <Grid container spacing={2} style={{ paddingLeft: "16px" }}>
+                      <Grid container>
+                        <Grid item xs={4}>
+                          <Box mb={4}>
+                            <Typography className={styles.inputLabel}>
+                              Grade
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Box mb={3}>
+                            <select
+                              className={styles.dropdown}
+                              onChange={(e) => {
+                                setPageData({
+                                  ...pageData,
+                                  grade: e.target.value,
+                                });
+                              }}
+                            >
+                              <option>PreK</option>
+                              <option>KG</option>
+                              <option>1</option>
+                              <option>2</option>
+                              <option>3</option>
+                              <option>4</option>
+                              <option>5</option>
+                              <option>6</option>
+                              <option>7</option>
+                              <option>8</option>
+                            </select>
+                          </Box>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={8}>
-                        <Box mb={3}>
-                          <select
-                            className={styles.dropdown}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                grade: e.target.value,
-                              });
-                            }}
-                          >
-                            <option>PreK</option>
-                            <option>KG</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                            <option>6</option>
-                            <option>7</option>
-                            <option>8</option>
-                          </select>
-                        </Box>
-
-                        <Box mb={3}>
-                          <select
-                            className={styles.dropdown}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                local: e.target.value,
-                              });
-                            }}
-                          >
-                            <option>USA/CANADA</option>
-                            <option>EU</option>
-                          </select>
-                        </Box>
-                        <Box mb={3}>
-                          <select
-                            className={styles.dropdown}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                lang: e.target.value,
-                              });
-                            }}
-                          >
-                            <option>English</option>
-                          </select>
-                        </Box>
+                      <Grid container>
+                        <Grid item xs={4}>
+                          <Box mb={4}>
+                            <Typography className={styles.inputLabel}>
+                              Local
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Box mb={3}>
+                            <select
+                              className={styles.dropdown}
+                              onChange={(e) => {
+                                setPageData({
+                                  ...pageData,
+                                  local: e.target.value,
+                                });
+                              }}
+                            >
+                              <option>USA/CANADA</option>
+                              <option>EU</option>
+                            </select>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                      <Grid container>
+                        <Grid item xs={4}>
+                          <Box mb={3}>
+                            <Typography className={styles.inputLabel}>
+                              Lang
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Box mb={3}>
+                            <select
+                              className={styles.dropdown}
+                              onChange={(e) => {
+                                setPageData({
+                                  ...pageData,
+                                  lang: e.target.value,
+                                });
+                              }}
+                            >
+                              <option>English</option>
+                            </select>
+                          </Box>
+                        </Grid>
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} style={{ paddingRight: "32px" }}>
                     <Grid container spacing={2}>
-                      <Grid item xs={5}>
-                        <Box mb={4}>
-                          <Typography
-                            className={styles.inputLabel}
-                            sx={{ whiteSpace: "nowrap" }}
-                          >
-                            Max Words:
-                          </Typography>
-                        </Box>
-                        <Box mb={4}>
-                          <Typography
-                            className={styles.inputLabel}
-                            sx={{ whiteSpace: "nowrap" }}
-                          >
-                            Max syllables:
-                          </Typography>
-                        </Box>
-                        <Box mb={3}>
-                          <Typography
-                            className={styles.inputLabel}
-                            sx={{ whiteSpace: "nowrap" }}
-                          >
-                            Senetence/Page
-                          </Typography>
-                        </Box>
+                      <Grid container>
+                        <Grid item xs={4} md={6}>
+                          <Box mb={4}>
+                            <Typography
+                              className={styles.inputLabel}
+                              sx={{ whiteSpace: "break-spaces" }}
+                            >
+                              Max Words:
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={8} md={6}>
+                          <Box mb={3}>
+                            <TextField
+                              type="text"
+                              variant="outlined"
+                              value={pageData.max_words}
+                              className={`${styles.boxInput}`}
+                              onChange={(e) => {
+                                setPageData({
+                                  ...pageData,
+                                  max_words: e.target.value,
+                                });
+                              }}
+                            />
+                          </Box>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={7}>
-                        <Box mb={3}>
-                          <TextField
-                            type="text"
-                            variant="outlined"
-                            value={pageData.max_words}
-                            className={`${styles.boxInput}`}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                max_words: e.target.value,
-                              });
-                            }}
-                          />
-                        </Box>
-                        <Box mb={3}>
-                          <TextField
-                            type="text"
-                            variant="outlined"
-                            value={pageData.max_syllabus}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                max_syllabus: e.target.value,
-                              });
-                            }}
-                            className={styles.boxInput}
-                          />
-                        </Box>
-                        <Box mb={3}>
-                          <TextField
-                            type="number"
-                            variant="outlined"
-                            value={pageData.senetence_per_Page}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                senetence_per_Page: e.target.value,
-                              });
-                            }}
-                            className={styles.boxInput}
-                          />
-                        </Box>
+                      <Grid container>
+                        <Grid item xs={4} md={6}>
+                          <Box mb={4}>
+                            <Typography
+                              className={styles.inputLabel}
+                              sx={{ whiteSpace: "break-spaces" }}
+                            >
+                              Max syllables:
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={8} md={6}>
+                          <Box mb={3}>
+                            <TextField
+                              type="text"
+                              variant="outlined"
+                              value={pageData.max_syllabus}
+                              onChange={(e) => {
+                                setPageData({
+                                  ...pageData,
+                                  max_syllabus: e.target.value,
+                                });
+                              }}
+                              className={styles.boxInput}
+                            />
+                          </Box>
+                        </Grid>
+                      </Grid>
+                      <Grid container>
+                        <Grid item xs={4} md={6}>
+                          <Box mb={3}>
+                            <Typography className={styles.inputLabel}>
+                              Senetence/Page
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={8} md={6}>
+                          <Box mb={3}>
+                            <TextField
+                              type="number"
+                              variant="outlined"
+                              value={pageData.senetence_per_Page}
+                              onChange={(e) => {
+                                setPageData({
+                                  ...pageData,
+                                  senetence_per_Page: e.target.value,
+                                });
+                              }}
+                              className={styles.boxInput}
+                            />
+                          </Box>
+                        </Grid>
                       </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid container spacing={2}>
+
+                <Grid container spacing={2} style={{ paddingRight: "32px" }}>
                   <Grid item xs={2}>
                     <Typography className={styles.inputLabel}>
                       Preview:
                     </Typography>
                   </Grid>
-                  <Grid item xs={10}>
+                  <Grid item xs={10} style={{ paddingLeft: "8px" }}>
                     {" "}
                     <textarea
                       id="instruction"
@@ -279,46 +304,109 @@ const Page1 = (props) => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={5}>
-                <Grid container spacing={1}>
-                  <Grid item xs={7}>
-                    <Box mb={7}>
-                      <Typography
-                        style={{
-                          fontWeight: "bold",
-                          marginBottom: "8px",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        Select items to created by OpenAI
-                      </Typography>
-                    </Box>
-                    <Box mb={2}>
-                      <Grid container spacing={2}>
-                        <Grid item ml={1} xs={1}>
+              <Grid item xs={12} lg={5} mt={2}>
+                <Grid container spacing={2} style={{ paddingLeft: "8px" }}>
+                  <Grid container>
+                    <Grid item xs={6} md={8} lg={6} xl={6}>
+                      <Box mb={4}>
+                        <Typography
+                          style={{
+                            fontWeight: "bold",
+                            marginBottom: "8px",
+                            whiteSpace: "break-spaces",
+                          }}
+                        >
+                          Select items to created by OpenAI
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={2} md={2} lg={3} xl={3}>
+                      <Box>
+                        <Typography className={styles.inputLabel}>
                           <Checkbox
                             {...label}
+                            disabled
+                            checked
                             style={{ padding: 0 }}
-                            checked={pageData.get_max_questions}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                get_max_questions: e.target.checked,
-                              });
-                            }}
                           />
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography className={styles.inputLabel}>
-                            Comprehension
-                            <br />
-                            Max Questions:
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                    <Box>
-                      <Typography className={styles.inputLabel}>
+                          Title:
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={3} md={2} lg={3} xl={3}>
+                      <Box>
+                        <Typography className={styles.inputLabel}>
+                          <Checkbox
+                            {...label}
+                            disabled
+                            checked
+                            style={{ padding: 0 }}
+                          />
+                          Genres:
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid container spacing={2}>
+                  <Grid container>
+                    <Grid item xs={1} lg={1} md={1}>
+                      <Box ml={1}>
+                        <Checkbox
+                          {...label}
+                          style={{ padding: 0 }}
+                          checked={pageData.get_max_questions}
+                          onChange={(e) => {
+                            setPageData({
+                              ...pageData,
+                              get_max_questions: e.target.checked,
+                            });
+                          }}
+                        />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={3} lg={4} md={4}>
+                      <Box>
+                        <Typography
+                          style={{ whiteSpace: "nowrap" }}
+                          className={styles.inputLabel}
+                        >
+                          Comprehension
+                          <br />
+                          Max Questions:
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6} lg={7} md={7}>
+                      <Box>
+                        <TextField
+                          type="number"
+                          variant="outlined"
+                          fullWidth
+                          value={pageData.max_questions}
+                          onChange={(e) =>
+                            setPageData({
+                              ...pageData,
+                              max_questions: e.target.value,
+                            })
+                          }
+                          className={styles.boxInput}
+                        />
+                        <Typography className={styles.inputLabel}>
+                          <Checkbox
+                            {...label}
+                            defaultChecked
+                            style={{ padding: 0 }}
+                          />
+                          Correct answer
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid item xs={1} md={1}>
+                      <Box>
                         <Checkbox
                           {...label}
                           checked={pageData.get_vocab_words}
@@ -329,11 +417,45 @@ const Page1 = (props) => {
                             });
                           }}
                         />
-                        Vocab words
+                      </Box>
+                    </Grid>
+
+                    <Grid item xs={3} md={4}>
+                      <Box mt={1}>
+                        <Typography className={styles.inputLabel}>
+                          Vocab words
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={1} md={1}>
+                      <Typography
+                        className={styles.inputLabel}
+                        style={{ paddingRight: "6px" }}
+                      >
+                        Max
                       </Typography>
-                    </Box>
-                    <Box>
-                      <Typography className={styles.inputLabel}>
+                    </Grid>
+                    <Grid item xs={5} md={6}>
+                      <Box>
+                        <TextField
+                          type="number"
+                          variant="outlined"
+                          fullWidth
+                          value={pageData.vocab_words}
+                          onChange={(e) => {
+                            setPageData({
+                              ...pageData,
+                              vocab_words: e.target.value,
+                            });
+                          }}
+                          className={styles.boxInput}
+                        />
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid item xs={1} md={1}>
+                      <Box>
                         <Checkbox
                           {...label}
                           checked={pageData.get_sight_words}
@@ -344,115 +466,43 @@ const Page1 = (props) => {
                             });
                           }}
                         />
-                        Sight words
+                      </Box>
+                    </Grid>
+                    <Grid item xs={3} md={4}>
+                      <Box mt={1}>
+                        <Typography className={styles.inputLabel}>
+                          Sight words
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={1} md={1}>
+                      <Typography
+                        className={styles.inputLabel}
+                        style={{ paddingRight: "6px" }}
+                      >
+                        Max
                       </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={5}>
-                    <Box mb={8}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                          <Typography className={styles.inputLabel}>
-                            <Checkbox
-                              {...label}
-                              disabled
-                              checked
-                              style={{ padding: 0 }}
-                            />
-                            Title:
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography className={styles.inputLabel}>
-                            <Checkbox
-                              {...label}
-                              disabled
-                              checked
-                              style={{ padding: 0 }}
-                            />
-                            Genres:
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                    <Box>
-                      <TextField
-                        type="number"
-                        variant="outlined"
-                        value={pageData.max_questions}
-                        onChange={(e) =>
-                          setPageData({
-                            ...pageData,
-                            max_questions: e.target.value,
-                          })
-                        }
-                        className={styles.boxInput}
-                      />
-                      <Typography className={styles.inputLabel}>
-                        <Checkbox
-                          {...label}
-                          defaultChecked
-                          style={{ padding: 0 }}
+                    </Grid>
+                    <Grid item xs={5} md={6}>
+                      <Box>
+                        <TextField
+                          type="number"
+                          variant="outlined"
+                          fullWidth
+                          value={pageData.vocab_words}
+                          onChange={(e) => {
+                            setPageData({
+                              ...pageData,
+                              vocab_words: e.target.value,
+                            });
+                          }}
+                          className={styles.boxInput}
                         />
-                        Correct answer
-                      </Typography>
-                    </Box>
-                    <Box mt={1}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={2}>
-                          <Typography
-                            className={styles.inputLabel}
-                            style={{ paddingRight: "6px" }}
-                          >
-                            Max
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={10}>
-                          <TextField
-                            type="number"
-                            variant="outlined"
-                            fullWidth
-                            value={pageData.vocab_words}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                vocab_words: e.target.value,
-                              });
-                            }}
-                            className={styles.boxInput}
-                          />
-                        </Grid>
-                      </Grid>
-                    </Box>
-                    <Box mt={2}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={2}>
-                          <Typography
-                            className={styles.inputLabel}
-                            style={{ paddingRight: "6px" }}
-                          >
-                            Max
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={10}>
-                          <TextField
-                            type="number"
-                            variant="outlined"
-                            fullWidth
-                            value={pageData.vocab_words}
-                            onChange={(e) => {
-                              setPageData({
-                                ...pageData,
-                                vocab_words: e.target.value,
-                              });
-                            }}
-                            className={styles.boxInput}
-                          />
-                        </Grid>
-                      </Grid>
-                    </Box>
+                      </Box>
+                    </Grid>
                   </Grid>
                 </Grid>
+
                 <Box
                   mt={5}
                   pt={3}
@@ -461,96 +511,130 @@ const Page1 = (props) => {
                   className={styles.boxBorder}
                 >
                   <Grid container>
-                    <Grid item xs={5}>
-                      <Typography className={styles.inputLabel}>
-                        <Checkbox
-                          checked={coverImageData.getCoverImage}
-                          onChange={(e) => {
-                            setCoverImageData({
-                              ...coverImageData,
-                              getCoverImage: e.target.checked,
-                            });
-                          }}
-                        />
-                        Cover Image
-                      </Typography>
-                      <Typography
-                        className={styles.inputLabel}
-                        style={{ marginLeft: "9px", paddingBlock: "4px" }}
-                      >
-                        Art Theme:
-                      </Typography>
-                      <Typography
-                        className={styles.inputLabel}
-                        style={{ marginLeft: "9px", paddingTop: "9px" }}
-                      >
-                        Images Count:
-                      </Typography>
+                    <Grid container spacing={2}>
+                      <Grid item xs={1} md={1}>
+                        <Box>
+                          <Checkbox
+                            checked={coverImageData.getCoverImage}
+                            onChange={(e) => {
+                              setCoverImageData({
+                                ...coverImageData,
+                                getCoverImage: e.target.checked,
+                              });
+                            }}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item xs={3} md={3}>
+                        <Box mt={1}>
+                          <Typography className={styles.inputLabel}>
+                            Cover Image
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={7} md={7}>
+                        <Box mt={1}>
+                          <TextField
+                            disabled={!coverImageData.getCoverImage}
+                            value={coverImageData.text}
+                            fullWidth
+                            onChange={(e) => {
+                              setCoverImageData({
+                                ...coverImageData,
+                                text: e.target.value,
+                              });
+                            }}
+                            variant="outlined"
+                            className={styles.boxInput}
+                          />
+                        </Box>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={7}>
-                      <TextField
-                        disabled={!coverImageData.getCoverImage}
-                        value={coverImageData.text}
-                        onChange={(e) => {
-                          setCoverImageData({
-                            ...coverImageData,
-                            text: e.target.value,
-                          });
-                        }}
-                        variant="outlined"
-                        className={styles.boxInput}
-                      />
+                  </Grid>
+                  <Grid>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4} md={4}>
+                        <Box mt={1}>
+                          <Typography
+                            className={styles.inputLabel}
+                            style={{ marginLeft: "9px", paddingBlock: "4px" }}
+                          >
+                            Art Theme:
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={7} md={7}>
+                        <Box>
+                          <select
+                            disabled={!coverImageData.getCoverImage}
+                            className={styles.dropdown}
+                            style={{ width: "100%", marginTop: "8px" }}
+                          >
+                            <option></option>
+                            <option>Digital Art</option>
+                            <option>3D Render</option>
+                            <option>Water Color</option>
+                            <option>Oil Painting</option>
+                          </select>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4} md={4}>
+                        <Box mt={1}>
+                          <Typography
+                            className={styles.inputLabel}
+                            style={{ marginLeft: "9px", paddingTop: "9px" }}
+                          >
+                            Images Count:
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={7} md={7}>
+                        <Box>
+                          <select
+                            className={styles.dropdown}
+                            style={{ width: "100%", marginTop: "8px" }}
+                            disabled={!coverImageData.getCoverImage}
+                            onChange={(e) => {
+                              setCoverImageData({
+                                ...coverImageData,
+                                imageCount: e.target.value,
+                              });
+                            }}
+                          >
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                            <option>10</option>
+                          </select>
+                        </Box>
+                      </Grid>
                       <Box>
-                        <select
-                          disabled={!coverImageData.getCoverImage}
-                          className={styles.dropdown}
-                          style={{ width: "82%", marginTop: "8px" }}
-                        >
-                          <option></option>
-                          <option>Digital Art</option>
-                          <option>3D Render</option>
-                          <option>Water Color</option>
-                          <option>Oil Painting</option>
-                        </select>
-                      </Box>
-                      <Box>
-                        <select
-                          className={styles.dropdown}
-                          style={{ width: "82%", marginTop: "8px" }}
-                          disabled={!coverImageData.getCoverImage}
-                          onChange={(e) => {
-                            setCoverImageData({
-                              ...coverImageData,
-                              imageCount: e.target.value,
-                            });
-                          }}
-                        >
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
-                          <option>6</option>
-                          <option>7</option>
-                          <option>8</option>
-                          <option>9</option>
-                          <option>10</option>
-                        </select>
+                        <Typography className={styles.inputLabel}>
+                          <Checkbox
+                            style={{ marginLeft: "18px" }}
+                            checked={coverImageData.illustration}
+                            onChange={(e) => {
+                              setCoverImageData({
+                                ...coverImageData,
+                                illustration: e.target.checked,
+                              });
+                            }}
+                          />
+                          Add Image Illustrations to All Pages
+                        </Typography>
                       </Box>
                     </Grid>
                   </Grid>
-                  <Typography className={styles.inputLabel}>
-                    <Checkbox
-                      checked={coverImageData.illustration}
-                      onChange={(e) => {
-                        setCoverImageData({
-                          ...coverImageData,
-                          illustration: e.target.checked,
-                        });
-                      }}
-                    />
-                    Add Image Illustrations to All Pages
-                  </Typography>
                 </Box>
               </Grid>
             </Grid>
@@ -591,7 +675,6 @@ const Page1 = (props) => {
               <Button
                 style={{
                   marginTop: "40px",
-                  marginBottom: "16px",
                   backgroundColor: "#40e0d0",
                   color: "#fff",
                 }}

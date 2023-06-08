@@ -5,6 +5,7 @@
   height: auto;
   color: #333;
 }
+
 .box {
   border: 1px solid #333;
   border-radius: 4px;
@@ -101,7 +102,6 @@
 }
 
 .pageEndBtn {
-  margin-top: 40px !important;
   margin-bottom: 16px;
   background-color: #40e0d0 !important;
   color: #fff !important;
@@ -110,4 +110,43 @@
 
 .pageEndBtn:hover {
   background-color: #40e0d0 !important;
+}
+
+.table {
+  width: 100%;
+}
+
+.table,
+td,
+th {
+  border: 1px solid #333;
+  padding: 8px;
+}
+
+.table tr {
+  text-align: left;
+}
+.table tr td:first-child,
+td:last-child,
+th:first-child,
+th:last-child {
+  text-align: center;
+}
+
+.viewBtn {
+  color: blue;
+  cursor: pointer;
+}
+
+.listWrapper {
+  margin-inline: 2%;
+}
+.dialogBox > div > div {
+  padding: 16px;
+}
+.crossIcon {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  font-size: 22px;
 }

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import styles from "./analytics.module.css";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import axios from "axios";
+import BaseService from "services/BaseService";
 
-export default function ApiForm() {
+export default function ApiForm({ records, setRecords }) {
   const [requestData, setRequestData] = useState({
     endpointTitle: "",
     endpointUrl: "",
@@ -19,13 +21,77 @@ export default function ApiForm() {
     body: "",
   });
 
-  console.log("requestData", requestData);
-  //   if (JSON.parse(requestData.body)) {
-  //     console.log("body", JSON.parse(requestData.body));
-  //   } else {
-  console.log("invalid json", requestData.body);
-  //   console.log("invalid json", eval(requestData.body));
-  //   }
+  const makeDefault = () => {
+    setRequestData({
+      endpointTitle: "",
+      endpointUrl: "",
+      description: "",
+      requestType: "GET",
+      isActive: true,
+      authorizationType: "BASIC",
+      authorization: {
+        userId: "",
+        password: "",
+        token: "",
+      },
+      headers: [{ key: "", value: "" }],
+      body: "",
+    });
+  };
+
+  function isJsonString(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  const apiData = () => {
+    const type = requestData.requestType.toLowerCase();
+    let header = {
+      Authorization: requestData.authorization,
+    };
+    requestData.headers.map((item) => {
+      if (item.key) {
+        header[item.key] = item.value;
+      }
+    });
+    const body = isJsonString(requestData.body);
+    let data;
+    if (requestData.body && !body) {
+      return alert("enter a valid json format in body field");
+    } else if (body) {
+      data = JSON.parse(requestData.body);
+    }
+
+    return { type, header, data };
+  };
+
+  const makeAPIRequest = async () => {
+    console.log("calling api");
+    const { type, header, data } = apiData();
+
+    try {
+      // const data = await axios[type](
+      //   `https://api.readabilititutor.com/${requestData.endpointUrl}`,
+      //   JSON.stringify(requestData.body),
+      //   { headers: header }
+      // );
+
+      const resp = await BaseService({
+        // url: "/Book/ePubImportSave",
+        url: `/${requestData.endpointUrl}`,
+        method: type,
+        data: data,
+        headers: header,
+      });
+      console.log("response", resp);
+    } catch (err) {
+      console.log("error", err);
+    }
+  };
 
   return (
     <>
@@ -350,16 +416,35 @@ export default function ApiForm() {
             </Box>
           </Grid>
 
-          <Box style={{ paddingInline: "8px" }}>
+          <Box style={{ paddingInline: "8px", marginBlock: "40px" }}>
             <Button
               className={styles.pageEndBtn}
               style={{
                 marginRight: "16px",
               }}
+              onClick={() => {
+                makeAPIRequest();
+              }}
             >
               Test
             </Button>
-            <Button className={styles.pageEndBtn}>Save</Button>
+            <Button
+              className={styles.pageEndBtn}
+              onClick={() => {
+                const { header, data } = apiData();
+                delete header["Authorization"];
+                records.push({
+                  ...requestData,
+                  headers: header,
+                  body: data,
+                });
+                setRecords([...records]);
+                localStorage.setItem("apiRecords", JSON.stringify(records));
+                makeDefault();
+              }}
+            >
+              Save
+            </Button>
           </Box>
         </Box>
       </Box>

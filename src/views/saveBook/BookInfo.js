@@ -60,7 +60,7 @@ const BookInfo = (props) => {
       >
         <Box
           sx={{
-            border: "1px solid #333",
+            // border: "1px solid #333",
             marginLeft: "2%",
             height: "auto",
             marginTop: "3%",
@@ -212,7 +212,7 @@ const BookInfo = (props) => {
                     />
                   </Box>
                 </Grid>
-                <Grid item sx={4}>
+                <Grid item xs={4}>
                   <Box mb={2}>
                     <Typography className={styles.inputLabel}>
                       Lexile End:
@@ -358,7 +358,12 @@ const BookInfo = (props) => {
                   >
                     {coverImagesRow.length > 0 &&
                       coverImagesRow.map((item) => (
-                        <Imagebox key={item} url={item} value={item} />
+                        <Imagebox
+                          onClick={() => setCoverImage(item)}
+                          key={item}
+                          url={item}
+                          value={item}
+                        />
                       ))}
                   </RadioGroup>
                 </FormControl>

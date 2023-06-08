@@ -15,7 +15,6 @@ import LoadingOverlay from "react-loading-overlay";
 const Pages = ({
   pageData,
   illustration,
-  showIllustration,
   generateImage,
   loading,
   updateExportableJson,
@@ -28,26 +27,7 @@ const Pages = ({
   const [newText, setNewText] = useState("");
 
   useEffect(() => {
-    let arr = [];
-    if (showIllustration) {
-      pageData?.Story?.forEach((item) => {
-        let value = {
-          ...item,
-          illustration: illustration,
-        };
-        arr.push(value);
-      });
-      setData(arr);
-    } else {
-      pageData?.Story?.forEach((item) => {
-        let value = {
-          ...item,
-          illustration: "",
-        };
-        arr.push(value);
-      });
-      setData(arr);
-    }
+    setData(pageData.Story);
   }, [pageData]);
 
   useEffect(() => {
@@ -55,8 +35,6 @@ const Pages = ({
       setNewImage(illustration);
     }
   }, [illustration]);
-
-  console.log("new image data", data);
 
   return (
     <>
