@@ -59,8 +59,8 @@ export default function Records({ records }) {
         <DialogTitle>API details</DialogTitle>
 
         <Grid container style={{ padding: "12px" }}>
-          {Object.entries(records[detailsIndex] || {}).map((item) => (
-            <Grid container my={1}>
+          {Object.entries(records[detailsIndex] || {}).map((item, i) => (
+            <Grid container my={1} key={i}>
               <Grid item xs={4} style={{ fontWeight: 600 }}>
                 {item[0].slice(0, 1).toUpperCase()}
                 {item[0].slice(1)} :

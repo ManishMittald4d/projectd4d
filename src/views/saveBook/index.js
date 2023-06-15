@@ -317,7 +317,7 @@ function SaveBook() {
       OptionalWords: "Manushkin,Fran",
       LexileLevelStart: LexileLevelMin,
       LexileLevelEnd: LexileLevelMax,
-      IsActive: true,
+      IsActive: false,
       DocumentList: docList,
       ExtraJSON: "",
       BookChapterList: ExtraList,

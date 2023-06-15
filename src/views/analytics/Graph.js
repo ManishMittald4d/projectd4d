@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Box,
+  Button,
   Dialog,
   DialogTitle,
   Grid,
@@ -10,19 +11,42 @@ import {
 import styles from "./analytics.module.css";
 import { MdCancel } from "react-icons/md";
 import { Select } from "components/ui";
-import { CanvasJSChart } from "canvasjs-react-charts";
 import { Chart } from "components/shared";
-import { bookReadcolor, compreColor } from "constants/chart.constant";
+import { COLORS, compreColor } from "constants/chart.constant";
+import axios from "axios";
+
+const graphTypes = [
+  {
+    label: "Line Chart",
+    value: "line",
+  },
+];
 
 export default function Graph({ open, setOpen, setPageNumber }) {
+  const defaultSeries = {
+    name: "",
+    type: "area",
+    data: [],
+  };
   const [endPoints, setEndPoints] = useState({});
-  const [endpointsData, setEndpointsData] = useState([]); //update this state on api call
   const [showTable, setShowTable] = useState(false); //dummy state (can be removed after api is implemented on endpoint selection)
-  const [chartsdata, setChartsdata] = useState({
+  const [chartsData, setChartsData] = useState({
     title: "",
+    type: "area",
     description: "",
-    axisColumns: [{ "x-axis": "", "y-axis": "" }],
+    axisTitle: { xAxis: "", yAxis: "" },
+    axisLabels: {
+      "x-axis": {
+        name: "",
+        values: [],
+      },
+    },
+    series: [defaultSeries],
   });
+  const [myCharts, setMyCharts] = useState([]);
+  const [endPointTableData, setEndPointTableData] = useState({});
+  const [apiData, setApiData] = useState({});
+  const [allCharts, setAllCharts] = useState([]);
 
   const endpointsAvailable = localStorage.getItem("apiRecords");
   const getEndPoints = endpointsAvailable && JSON.parse(endpointsAvailable);
@@ -44,12 +68,48 @@ export default function Graph({ open, setOpen, setPageNumber }) {
   };
 
   const selectedEndpoints = (value) => {
+    axios
+      .get("https://healthcare.digital4design.in/api/json/columns")
+      .then((resp) => {
+        const { data } = resp;
+        console.log("tableResp", resp);
+        setApiData(data);
+        const d = Object.values(data);
+        setEndPointTableData({
+          headers: Object.keys(data),
+          body: d[0].map((column, i) => d.map((values, r) => values[i])),
+        });
+        setShowTable(true);
+
+        const charts = localStorage.getItem("allApiCharts")
+          ? JSON.parse(localStorage.getItem("allApiCharts"))
+          : [];
+
+        const myCharts =
+          Array.isArray(charts) && charts.length > 0
+            ? charts.filter((item) => item.endPointTitle === value.label)
+            : [];
+        const chartArr = [];
+        console.log("myCharts", myCharts);
+        console.log("charts", charts);
+        console.log("value", value);
+        myCharts.map((item) => {
+          chartArr.push(item.chartsData);
+        });
+        console.log("chartArr", chartArr);
+        setMyCharts([...chartArr]);
+        setAllCharts([...charts]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     setEndPoints(value);
     setOpen(false);
-    setShowTable(true);
   };
 
-  console.log("chartsdata", chartsdata);
+  console.log("chartsData", chartsData);
+  console.log("allCharts", myCharts);
 
   const graphData = {
     theme: "light2",
@@ -130,29 +190,6 @@ export default function Graph({ open, setOpen, setPageNumber }) {
     ],
   };
 
-  const compreshenData = [
-    {
-      name: "Book Reading count",
-      type: "donut",
-      data: [11, 32, 45, 32, 34, 52, 41],
-    },
-    {
-      name: "Book Reading count",
-      data: [
-        { y: 11, x: "14 Jan" },
-        { y: 18, x: "15 Jan" },
-        { y: 19, x: "15 Jan" },
-        { y: 12, x: "16 Jan" },
-        { y: 15, x: "17 Jan" },
-        { y: 12, x: "18 Jan" },
-        { y: 13, x: "19 Jan" },
-        { y: 11, x: "20 Jan" },
-        { y: 14, x: "21 Jan" },
-        { y: 16, x: "22 Jan" },
-      ],
-    },
-  ];
-
   return (
     <Box>
       {showTable && (
@@ -164,46 +201,153 @@ export default function Graph({ open, setOpen, setPageNumber }) {
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Endpoint Title</th>
-                <th scope="col">Endpoint Url</th>
-                <th scope="col">Description</th>
-                <th>Actions</th>
+                {endPointTableData.headers &&
+                  endPointTableData.headers.length > 0 &&
+                  endPointTableData.headers.map((header, i) => (
+                    <th key={header + 1}>{header}</th>
+                  ))}
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
-                <td>5</td>
-              </tr>
+              {endPointTableData.body &&
+                endPointTableData.body.length > 0 &&
+                endPointTableData.body.map((row, i) => (
+                  <tr key={i}>
+                    <td>{i + 1}</td>
+                    {row.map((cellData, i) => (
+                      <td key={cellData + i}>{cellData}</td>
+                    ))}
+                  </tr>
+                ))}
             </tbody>
           </table>
 
           <Grid
             container
-            xs={6}
             my={1}
             style={{
               height: "fit-content",
               paddingInline: "8px",
             }}
           >
-            <Box className={styles.gridBox}>
-              <Typography className={styles.inputLabel}>Chart Title</Typography>
-              <TextField
-                type="text"
-                variant="outlined"
-                className={`${styles.boxInput}`}
-                value={chartsdata.title}
+            <Grid item xs={6}>
+              <Box className={styles.gridBox}>
+                <Typography className={styles.inputLabel}>
+                  Chart Title
+                </Typography>
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  placeholder="Chart Title"
+                  className={`${styles.boxInput}`}
+                  value={chartsData.title}
+                  onChange={(e) => {
+                    setChartsData({
+                      ...chartsData,
+                      title: e.target.value,
+                    });
+                  }}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={1}></Grid>
+            <Grid item xs={3}>
+              <Typography className={styles.inputLabel}>Chart Type</Typography>
+              <select
+                className={`${styles.dropdown}`}
+                value={chartsData.type}
                 onChange={(e) => {
-                  setChartsdata({
-                    ...chartsdata,
-                    title: e.target.value,
-                  });
+                  const type = e.target.value;
+                  setChartsData({ ...chartsData, type: type });
                 }}
-              />
+              >
+                <option value="area">Area Chart</option>
+                <option value="line">Line Chart</option>
+                <option value="bar">Bar Chart</option>
+                <option value="donut">Pie Chart</option>
+              </select>
+            </Grid>
+          </Grid>
+
+          <Grid container my={1} style={{ paddingInline: "8px" }}>
+            <Typography className={styles.inputLabel}>Axis titles </Typography>
+            <Box className={`${styles.gridBox} ${styles.headersBox}`}>
+              <Grid container my={1}>
+                <Grid item xs={6}>
+                  <TextField
+                    type="text"
+                    variant="outlined"
+                    placeholder="X-axis Title"
+                    className={`${styles.boxInput}`}
+                    value={chartsData.axisTitle.xAxis}
+                    onChange={(e) => {
+                      setChartsData({
+                        ...chartsData,
+                        axisTitle: {
+                          ...chartsData.axisTitle,
+                          xAxis: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6} pl={2}>
+                  <TextField
+                    type="text"
+                    variant="outlined"
+                    placeholder="Y-axis Title"
+                    className={`${styles.boxInput}`}
+                    value={chartsData.axisTitle.yAxis}
+                    onChange={(e) => {
+                      setChartsData({
+                        ...chartsData,
+                        axisTitle: {
+                          ...chartsData.axisTitle,
+                          yAxis: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </Grid>
+
+          <Grid container my={1} xs={6} style={{ paddingInline: "8px" }}>
+            <Box style={{ width: "100%" }}>
+              <Typography className={styles.inputLabel}>
+                Select Base Axis
+              </Typography>
+              <Grid item xs={12}>
+                <select
+                  className={`${styles.dropdown}`}
+                  value={chartsData.axisLabels["x-axis"].name || ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const labels = apiData[value];
+                    setChartsData({
+                      ...chartsData,
+                      axisLabels: {
+                        ...chartsData.axisLabels,
+                        ["x-axis"]: {
+                          ...chartsData.axisLabels["x-axis"],
+                          name: value,
+                          values: labels,
+                        },
+                      },
+                    });
+                  }}
+                >
+                  <option value="" disabled>
+                    Select x-axis Labels
+                  </option>
+                  {endPointTableData.headers &&
+                    endPointTableData.headers.length > 0 &&
+                    endPointTableData.headers.map((header, i) => (
+                      <option key={header + 1}>{header}</option>
+                    ))}
+                </select>
+              </Grid>
             </Box>
           </Grid>
 
@@ -217,10 +361,10 @@ export default function Graph({ open, setOpen, setPageNumber }) {
                   id="instruction"
                   name="previewData"
                   className={styles.previewData}
-                  value={chartsdata.description}
+                  value={chartsData.description}
                   onChange={(e) => {
-                    setChartsdata({
-                      ...chartsdata,
+                    setChartsData({
+                      ...chartsData,
                       description: e.target.value,
                     });
                   }}
@@ -229,147 +373,165 @@ export default function Graph({ open, setOpen, setPageNumber }) {
             </Box>
           </Grid>
 
-          <Grid container my={1} style={{ paddingInline: "8px" }}>
-            <Typography className={styles.inputLabel}>Axis </Typography>
-            <Box className={`${styles.gridBox} ${styles.headersBox}`}>
-              {chartsdata.axisColumns.map((values, i) => (
-                <Grid container key={i} my={1}>
-                  <Grid item xs={5} pr={2}>
-                    <select
-                      className={`${styles.dropdown}`}
-                      placeholder={Object.keys(values)[0]}
-                      onChange={(e) => {
-                        const axisName =
-                          chartsdata.axisColumns.length > 1
-                            ? `x${chartsdata.axisColumns.length - 1}-axis`
-                            : `x-axis`;
-                        chartsdata.axisColumns[i] = {
-                          ...values,
-                          [axisName]: e.target.value,
-                        };
-                        setChartsdata({ ...chartsdata });
-                      }}
-                      defaultValue={""}
-                    >
-                      <option value="" disabled>
-                        Select {Object.keys(values)[0]}
-                      </option>
-                      <option>column 1</option>
-                      <option>column 2</option>
-                      <option>column 3</option>
-                      <option>column 4</option>
-                    </select>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <select
-                      className={`${styles.dropdown}`}
-                      placeholder={Object.keys(values)[1]}
-                      onChange={(e) => {
-                        const axisName =
-                          chartsdata.axisColumns.length > 1
-                            ? `y${chartsdata.axisColumns.length - 1}-axis`
-                            : `y-axis`;
-                        chartsdata.axisColumns[i] = {
-                          ...values,
-                          [axisName]: e.target.value,
-                        };
-                        setChartsdata({ ...chartsdata });
-                      }}
-                      defaultValue={""}
-                    >
-                      <option value="" disabled>
-                        Select {Object.keys(values)[1]}
-                      </option>
-                      <option>column 1</option>
-                      <option>column 2</option>
-                      <option>column 3</option>
-                      <option>column 4</option>
-                    </select>
-                  </Grid>
-                  {/* {
-                    <Grid item xs={1} style={{ alignSelf: "center" }}>
-                      {i === chartsdata.axisColumns.length - 1 && (
-                        <Typography
-                          className={styles.headerActionBtn}
-                          onClick={() => {
-                            const xAxisName = `x${chartsdata.axisColumns.length}-axis`;
-                            const yAxisName = `y${chartsdata.axisColumns.length}-axis`;
-
-                            chartsdata.axisColumns.push({
-                              [xAxisName]: "",
-                              [yAxisName]: "",
+          <Grid container my={1} xs={6} style={{ paddingInline: "8px" }}>
+            <Box style={{ width: "100%" }}>
+              <Typography className={styles.inputLabel}>
+                Graph Values
+              </Typography>
+              <Box className={`${styles.headersBox}`}>
+                {chartsData.series &&
+                  chartsData.series.length > 0 &&
+                  chartsData.series.map((values, i) => (
+                    <Grid container key={i} my={1}>
+                      <Grid item xs={11} pr={2}>
+                        <select
+                          className={`${styles.dropdown}`}
+                          value={values.name}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            const series = {
+                              name: value,
+                              type: chartsData.type,
+                              data: apiData[value],
+                            };
+                            chartsData.series.splice(i, 1, series);
+                            setChartsData({
+                              ...chartsData,
                             });
-                            setChartsdata({ ...chartsdata });
                           }}
                         >
-                          +
-                        </Typography>
-                      )}
-                      {chartsdata.axisColumns.length - 1 === i && i > 0 && (
-                        <Typography
-                          className={styles.headerActionBtn}
-                          onClick={() => {
-                            const newaxisColumns = chartsdata.axisColumns;
-                            newaxisColumns.splice(i, 1);
-                            setChartsdata({ ...chartsdata });
-                          }}
-                        >
-                          -
-                        </Typography>
-                      )}
+                          <option value="" disabled>
+                            Select {`series-${i + 1}`}
+                          </option>
+                          {endPointTableData.headers &&
+                            endPointTableData.headers.length > 0 &&
+                            endPointTableData.headers.map((header, i) => (
+                              <option key={header + 1}>{header}</option>
+                            ))}
+                        </select>
+                      </Grid>
+                      {
+                        <Grid item xs={1} style={{ alignSelf: "center" }}>
+                          {i === chartsData.series.length - 1 && (
+                            <Typography
+                              className={styles.headerActionBtn}
+                              onClick={() => {
+                                chartsData.series.push(defaultSeries);
+                                setChartsData({ ...chartsData });
+                              }}
+                            >
+                              +
+                            </Typography>
+                          )}
+                          {chartsData.series.length - 1 === i && i > 0 && (
+                            <Typography
+                              className={styles.headerActionBtn}
+                              onClick={() => {
+                                const newaxisColumns = chartsData.series;
+                                newaxisColumns.splice(i, 1);
+                                setChartsData({ ...chartsData });
+                              }}
+                            >
+                              -
+                            </Typography>
+                          )}
+                        </Grid>
+                      }
                     </Grid>
-                  } */}
-                </Grid>
-              ))}
+                  ))}
+              </Box>
             </Box>
           </Grid>
-
-          <div
+          <Button
+            className={styles.pageEndBtn}
             style={{
-              marginTop: "32px",
-              width: "900px",
-              height: "450px",
-              marginInline: "auto",
+              marginRight: "16px",
             }}
-          >
-            <CanvasJSChart options={graphData} />
-
-            <Chart
-              options={{
-                dataLabels: {
-                  enabled: false,
-                },
-                legend: {
-                  show: true,
-                  showForSingleSeries: true,
-                },
-                colors: compreColor,
-                stroke: {
-                  curve: "smooth",
-                },
-                xaxis: {
-                  type: "datetime",
-                  categories: [
-                    "2018-09-19T00:00:00.000Z",
-                    "2018-09-19T01:30:00.000Z",
-                    "2018-09-19T02:30:00.000Z",
-                    "2018-09-19T03:30:00.000Z",
-                    "2018-09-19T04:30:00.000Z",
-                    "2018-09-19T05:30:00.000Z",
-                    "2018-09-19T06:30:00.000Z",
-                  ],
-                },
-                tooltip: {
-                  x: {
-                    format: "dd/MM/yy HH:mm",
+            onClick={() => {
+              myCharts.push(chartsData);
+              setMyCharts([...myCharts]);
+              allCharts.push({
+                endPointTitle: endPoints.label,
+                chartsData,
+              });
+              setChartsData({
+                title: "",
+                type: "area",
+                description: "",
+                axisTitle: { xAxis: "", yAxis: "" },
+                axisLabels: {
+                  "x-axis": {
+                    name: "",
+                    values: [],
                   },
                 },
+                series: [defaultSeries],
+              });
+              localStorage.setItem("allApiCharts", JSON.stringify(allCharts));
+            }}
+          >
+            Add Chart
+          </Button>
+
+          {/* <CanvasJSChart options={graphData} /> */}
+
+          {myCharts.map((item, index) => (
+            <div
+              style={{
+                marginTop: "32px",
+                width: "900px",
+                height: "450px",
+                marginInline: "auto",
               }}
-              series={compreshenData}
-              type="area"
-              height={300}
-            />
-          </div>
+              key={index}
+            >
+              <Chart
+                options={{
+                  title: { text: item.title },
+                  // dataLabels: {
+                  //   enabled: false,
+                  // },
+                  // legend: {
+                  //   show: true,
+                  //   // showForSingleSeries: true,
+                  // },
+                  // colors: compreColor,
+                  colors: item.type === "area" ? compreColor : COLORS,
+                  stroke: {
+                    curve: "smooth",
+                  },
+                  xaxis: {
+                    title: {
+                      text: item.axisTitle.xAxis,
+                      offsetY: 80,
+                    },
+                    categories: item.axisLabels["x-axis"].values,
+                  },
+                  yaxis: {
+                    title: { text: item.axisTitle.yAxis },
+                  },
+                  chart: {
+                    toolbar: {
+                      show: true,
+                      offsetX: 0,
+                      offsetY: 0,
+                      tools: {
+                        download: true,
+                        zoom: true,
+                        zoomin: true,
+                        zoomout: true,
+                        pan: false,
+                        reset: false,
+                        customIcons: [],
+                      },
+                    },
+                  },
+                }}
+                series={item.series}
+                height={300}
+              />
+            </div>
+          ))}
         </>
       )}
 
@@ -404,3 +566,100 @@ export default function Graph({ open, setOpen, setPageNumber }) {
     </Box>
   );
 }
+
+// <Grid container my={1} style={{ paddingInline: "8px" }}>
+// <Typography className={styles.inputLabel}>Graph Values </Typography>
+// <Box className={`${styles.gridBox} ${styles.headersBox}`}>
+//   {chartsData.graphData.map((values, i) => (
+//     <Grid container key={i} my={1}>
+//       <Grid item xs={6} pr={2}>
+//         <select
+//           className={`${styles.dropdown}`}
+//           placeholder={Object.keys(values)[0]}
+//           onChange={(e) => {
+//             const axisName =
+//               chartsData.graphData.length > 1
+//                 ? `x${chartsData.graphData.length - 1}-axis`
+//                 : `x-axis`;
+//             chartsData.graphData[i] = {
+//               ...values,
+//               [axisName]: e.target.value,
+//             };
+//             setChartsData({ ...chartsData });
+//           }}
+//           defaultValue={""}
+//         >
+//           <option value="" disabled>
+//             Select {Object.keys(values)[0]}
+//           </option>
+//           {endPointData.headers &&
+//             endPointData.headers.length > 0 &&
+//             endPointData.headers.map((header) => (
+//               <option>{header}</option>
+//             ))}
+//         </select>
+//       </Grid>
+//       <Grid item xs={6}>
+//         <select
+//           className={`${styles.dropdown}`}
+//           placeholder={Object.keys(values)[1]}
+//           onChange={(e) => {
+//             const axisName =
+//               chartsData.graphData.length > 1
+//                 ? `y${chartsData.graphData.length - 1}-axis`
+//                 : `y-axis`;
+//             chartsData.graphData[i] = {
+//               ...values,
+//               [axisName]: e.target.value,
+//             };
+//             setChartsData({ ...chartsData });
+//           }}
+//           defaultValue={""}
+//         >
+//           <option value="" disabled>
+//             Select {Object.keys(values)[1]}
+//           </option>
+//           {endPointData.headers &&
+//             endPointData.headers.length > 0 &&
+//             endPointData.headers.map((header) => (
+//               <option>{header}</option>
+//             ))}
+//         </select>
+//       </Grid>
+//       {
+//         <Grid item xs={1} style={{ alignSelf: "center" }}>
+//           {i === chartsData.axisColumns.length - 1 && (
+//             <Typography
+//               className={styles.headerActionBtn}
+//               onClick={() => {
+//                 const xAxisName = `x${chartsData.axisColumns.length}-axis`;
+//                 const yAxisName = `y${chartsData.axisColumns.length}-axis`;
+
+//                 chartsData.axisColumns.push({
+//                   [xAxisName]: "",
+//                   [yAxisName]: "",
+//                 });
+//                 setChartsData({ ...chartsData });
+//               }}
+//             >
+//               +
+//             </Typography>
+//           )}
+//           {chartsData.axisColumns.length - 1 === i && i > 0 && (
+//             <Typography
+//               className={styles.headerActionBtn}
+//               onClick={() => {
+//                 const newaxisColumns = chartsData.axisColumns;
+//                 newaxisColumns.splice(i, 1);
+//                 setChartsData({ ...chartsData });
+//               }}
+//             >
+//               -
+//             </Typography>
+//           )}
+//         </Grid>
+//       }
+//     </Grid>
+//   ))}
+// </Box>
+// </Grid>
