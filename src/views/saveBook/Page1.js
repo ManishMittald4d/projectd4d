@@ -8,13 +8,17 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import styles from "./kycForm.module.css";
-
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 const Page1 = (props) => {
-  const { getbookData, newPreview } = props;
+  const { getbookData, newPreview, NoApiJson } = props;
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [pageData, setPageData] = useState({
     topic: "Write a story on latest trending topic.",
-    grade: "PreK",
+    grade: "1",
     local: "USA/CANADA",
     lang: "English",
     max_words: 500,
@@ -31,10 +35,92 @@ const Page1 = (props) => {
     getCoverImage: false,
     imageCount: 1,
     text: "",
-    illustration: true,
+    illustration: false,
   });
   const [preview, setPreview] = useState("");
+  const [open, setOpen] = React.useState(false);
+  const [CopyJSon, setCopyJSon] = React.useState(
+    JSON.stringify({
+      Title: ["The Lost Ball", "1"],
+      Tags: ["Ball", "Kids"],
+      Genre: ["Fiction", "Short Story"],
+      Grade: "1",
+      Story: [
+        {
+          PageText:
+            "One sunny day, Timmy was playing with his red ball. He was rolling it around on the grass, having lots of fun.",
+          Questions: [
+            {
+              Question: "What was Timmy playing with?",
+              Answer: "His red ball.",
+            },
+          ],
+        },
+        {
+          PageText:
+            "Suddenly, Timmy kicked the ball too hard. It went flying into the nearby bushes!",
+          Questions: [
+            {
+              Question: "Where did the ball go?",
+              Answer: "Into the bushes.",
+            },
+          ],
+        },
+        {
+          PageText:
+            "Timmy looked for his ball by himself, but he couldn't find it. He asked his friend, Jack, for help. Jack suggested they look in the tall grass.",
+          Questions: [
+            {
+              Question: "Who did Timmy ask for help?",
+              Answer: "His friend, Jack.",
+            },
+            {
+              Question: "Where did Jack suggest they look?",
+              Answer: "In the tall grass.",
+            },
+          ],
+        },
+        {
+          PageText:
+            "After a few minutes of searching, Jack found the ball hiding under a small bush. Timmy was very happy and grateful to his friend.",
+          Questions: [
+            {
+              Question: "Who found the ball?",
+              Answer: "Jack found the ball.",
+            },
+            {
+              Question: "Where was the ball hiding?",
+              Answer: "Under a small bush.",
+            },
+          ],
+        },
+        {
+          PageText:
+            "Timmy and Jack continued to play with the ball for the rest of the day. They made sure to be more careful this time!",
+          Questions: [
+            {
+              Question: "What did Timmy and Jack do for the rest of the day?",
+              Answer: "They played with the ball.",
+            },
+          ],
+        },
+      ],
+      Vocabulary: ["Sunny", "Grass", "Bushes"],
+      SightWords: ["Ball", "Red", "Small"],
+      ARScore: 1.0,
+      LexileLevelMin: "100",
+      LexileLevelMax: "200",
+    })
+  );
+  // const [CopyJSon, setCopyJSon] = React.useState("");
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   useEffect(() => {
     setPreview(
       `${pageData.topic} Maximum syllables in the words shall be ${
@@ -107,7 +193,7 @@ const Page1 = (props) => {
                   Scope form OpenAI
                 </Typography>
                 <Typography className={styles.textStyle}>
-                  All will generate content based on the following setting.
+                  AI will generate content based on the following setting.
                 </Typography>
 
                 <Grid container spacing={2}>
@@ -125,6 +211,7 @@ const Page1 = (props) => {
                           <Box mb={3}>
                             <select
                               className={styles.dropdown}
+                              value={pageData.grade}
                               onChange={(e) => {
                                 setPageData({
                                   ...pageData,
@@ -489,11 +576,11 @@ const Page1 = (props) => {
                           type="number"
                           variant="outlined"
                           fullWidth
-                          value={pageData.vocab_words}
+                          value={pageData.sight_words}
                           onChange={(e) => {
                             setPageData({
                               ...pageData,
-                              vocab_words: e.target.value,
+                              sight_words: e.target.value,
                             });
                           }}
                           className={styles.boxInput}
@@ -552,7 +639,7 @@ const Page1 = (props) => {
                     </Grid>
                   </Grid>
                   <Grid>
-                    <Grid container spacing={2}>
+                    {/* <Grid container spacing={2}>
                       <Grid item xs={4} md={4}>
                         <Box mt={1}>
                           <Typography
@@ -570,7 +657,7 @@ const Page1 = (props) => {
                             className={styles.dropdown}
                             style={{ width: "100%", marginTop: "8px" }}
                           >
-                            <option></option>
+                             <option></option> 
                             <option>Digital Art</option>
                             <option>3D Render</option>
                             <option>Water Color</option>
@@ -578,15 +665,15 @@ const Page1 = (props) => {
                           </select>
                         </Box>
                       </Grid>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                   <Grid container>
                     <Grid container spacing={2}>
                       <Grid item xs={4} md={4}>
-                        <Box mt={1}>
+                        <Box mt={1} mb={2}>
                           <Typography
                             className={styles.inputLabel}
-                            style={{ marginLeft: "9px", paddingTop: "9px" }}
+                            style={{ marginLeft: "9px" }}
                           >
                             Images Count:
                           </Typography>
@@ -618,7 +705,7 @@ const Page1 = (props) => {
                           </select>
                         </Box>
                       </Grid>
-                      <Box>
+                      {/* <Box>
                         <Typography className={styles.inputLabel}>
                           <Checkbox
                             style={{ marginLeft: "18px" }}
@@ -632,7 +719,7 @@ const Page1 = (props) => {
                           />
                           Add Image Illustrations to All Pages
                         </Typography>
-                      </Box>
+                      </Box> */}
                     </Grid>
                   </Grid>
                 </Box>
@@ -689,10 +776,62 @@ const Page1 = (props) => {
               >
                 Create with OpenAI-Raw Type
               </Button>
+              <Button
+                style={{
+                  marginTop: "40px",
+                  marginLeft: "10px",
+                  backgroundColor: "#40e0d0",
+                  color: "#fff",
+                }}
+                onClick={() => {
+                  handleClickOpen();
+                }}
+              >
+                Import JSON
+              </Button>
             </Box>
           </Box>
         </Box>
       </Box>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Import JSON"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <textarea
+              style={{
+                width: "480px",
+                height: "400px",
+                minHeight: "70px",
+                margin: "40px",
+                border: "1px solid #ccc",
+              }}
+              // className={` ${styles.previewData}`}
+              value={CopyJSon}
+              onChange={(e) => {
+                setCopyJSon(e.target.value);
+              }}
+            ></textarea>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleClose();
+              NoApiJson(CopyJSon);
+            }}
+          >
+            Okay
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

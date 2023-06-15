@@ -25,6 +25,7 @@
     "apexcharts": "^3.35.2",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
+    "canvasjs-react-charts": "^1.0.5",
     "classnames": "^2.2.6",
     "clsx": "^1.2.1",
     "d3-fetch": "^2.0.0",

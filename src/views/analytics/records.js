@@ -27,7 +27,6 @@ export default function Records({ records }) {
         <tbody>
           {records && records.length > 0 ? (
             records.map((item, index) => {
-              console.log(item);
               return (
                 <tr key={index}>
                   <td>{index + 1}</td>
@@ -68,8 +67,8 @@ export default function Records({ records }) {
               </Grid>
               <Grid item xs={6}>
                 {typeof item[1] === "object"
-                  ? Object.entries(item[1]).map((value) => (
-                      <Grid container>
+                  ? Object.entries(item[1]).map((value, i) => (
+                      <Grid container key={i}>
                         <Grid item xs={6} style={{ fontWeight: 600 }}>
                           {value[0].slice(0, 1).toUpperCase()}
                           {value[0].slice(1)}

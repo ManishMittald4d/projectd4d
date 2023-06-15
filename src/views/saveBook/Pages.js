@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./kycForm.module.css";
 import { MdCancel } from "react-icons/md";
 import LoadingOverlay from "react-loading-overlay";
+import BaseService from "services/BaseService";
 
 const Pages = ({
   pageData,
@@ -36,6 +37,35 @@ const Pages = ({
     }
   }, [illustration]);
 
+  const getImageUrl = (e) => {
+    var file = e.target.files[0];
+    const data = new FormData();
+    data.append("Filedata", file);
+    setNewImage("");
+
+    const resp = BaseService({
+      url: "/Upload",
+      method: "POST",
+      data: data,
+      headers: {
+        UserToken:
+          "DGj+TUGtk9GERZJMnE0yy7NKGyMtAnntAliL/ysncrTMy7AesbCuRm47xGRboG/yny1rw6YPkEpheA/xfrF4sKyLJvUjLObOXLkrHFqveuwzxq14iP/0daHWGrPT0bR5siVqO7SKbTDsCansW5+6kSSkQfKJ+V7VCLlyJMeKXWJgMdy4hhUad4Y6oqgQnXZVJJF3lZQrMwLWrgVQpFZvRNVygJ9q03ALLVnw71Pwrac=",
+        AcitivityIds: "1",
+        FingerPrintKey: "readability",
+      },
+    })
+      .then((response) => {
+        console.log("img response", response.data);
+        const img = `https://dev-app.readabilitytutor.com/imgs${response.data.Data.FilePath.slice(
+          6
+        )}`;
+        setNewImage(img);
+      })
+      .catch((err) => {
+        console.log("error", err);
+      });
+  };
+
   return (
     <>
       <Box
@@ -54,7 +84,7 @@ const Pages = ({
                 <th scope="col">#</th>
                 <th scope="col">Page Text</th>
                 <th scope="col">Illustration</th>
-                <th scope="col">OpenAI Id</th>
+                {/* <th scope="col">OpenAI Id</th> */}
                 <th>Actions</th>
               </tr>
             </thead>
@@ -74,7 +104,7 @@ const Pages = ({
                         "N/A"
                       )}
                     </td>
-                    <td>@{item.name}</td>
+                    {/* <td>@{item.name}</td> */}
                     <td>
                       <button
                         onClick={() => {
@@ -184,7 +214,7 @@ const Pages = ({
                           },
                         }}
                       />
-                      <Typography>Art Theme:</Typography>
+                      {/* <Typography>Art Theme:</Typography>
                       <Box>
                         <select
                           className={styles.dropdown}
@@ -196,14 +226,16 @@ const Pages = ({
                           <option>Water Color</option>
                           <option>Oil Painting</option>
                         </select>
-                      </Box>
-                      <ButtonGroup sx={{ marginBottom: "7%" }}>
+                      </Box> */}
+                      <ButtonGroup sx={{ marginBottom: "7%", marginTop: "4%" }}>
                         <button
                           style={{
                             backgroundColor: "#40E0D0",
                             marginRight: "4%",
                             color: "white",
                             font: "16px",
+                            padding: "8px",
+                            borderRadius: "5px",
                           }}
                           onClick={() => {
                             if (!imageTitle) {
@@ -228,15 +260,15 @@ const Pages = ({
                             backgroundColor: "#40E0D0",
                             color: "white",
                             font: "16px",
+                            padding: "8px",
+                            borderRadius: "5px",
                           }}
                           onClick={() => {
                             var input = document.createElement("input");
                             input.type = "file";
                             input.style.display = "none";
                             input.onchange = function (e) {
-                              var file = e.target.files[0];
-                              const selectedImage = URL.createObjectURL(file);
-                              setNewImage(selectedImage);
+                              getImageUrl(e);
                             };
                             document.body.appendChild(input);
                             input.click();

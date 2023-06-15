@@ -41,7 +41,7 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
                 <th scope="col">Page Text</th>
                 <th scope="col">Correct Answer</th>
                 <th scope="col">Reference page</th>
-                <th scope="col">OpenAI Id</th>
+                {/* <th scope="col">OpenAI Id</th> */}
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -54,7 +54,7 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
                       <td>{value.Question}</td>
                       <td>{value.Answer}</td>
                       <td>{index + 1}</td>
-                      <td>{"@"}</td>
+                      {/* <td>{"@"}</td> */}
                       <td>
                         <button
                           onClick={() => {

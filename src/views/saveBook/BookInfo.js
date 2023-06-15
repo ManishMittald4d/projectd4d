@@ -12,6 +12,8 @@ import React, { useEffect, useState } from "react";
 import Imagebox from "./imagebox";
 import styles from "./kycForm.module.css";
 import LoadingOverlay from "react-loading-overlay";
+import BaseService from "services/BaseService";
+import axios from "axios";
 
 const BookInfo = (props) => {
   const {
@@ -21,15 +23,27 @@ const BookInfo = (props) => {
     generateImage,
     loading,
     setAiFormData,
+    setImagesIndex,
+    setCoverImages,
   } = props;
+
   const [coverImage, setCoverImage] = useState(
-    coverImages[0] ||
-      "https://foyr.com/learn/wp-content/uploads/2021/08/design-your-dream-home.jpg"
+    "https://foyr.com/learn/wp-content/uploads/2021/08/design-your-dream-home.jpg"
   );
-  const [imageRow, setImageRow] = useState({ start: 0, end: 4 });
+  const [imageRow, setImageRow] = useState({ start: 0, end: 8 });
   const [formData, setFormData] = useState(aiFormData || {});
   const [coverImagesRow, setCoverImagesRow] = useState([]);
   const [newImageTitle, setNewImageTitle] = useState("");
+
+  useEffect(() => {
+    setCoverImage(coverImages[0]);
+    let coverImageRow = coverImages.slice(imageRow.start, imageRow.end);
+    setCoverImagesRow(coverImageRow);
+  }, [coverImages]);
+
+  useEffect(() => {
+    setImagesIndex(coverImage);
+  }, [coverImage]);
 
   useEffect(() => {
     let body = "";
@@ -45,11 +59,53 @@ const BookInfo = (props) => {
     });
   }, [aiFormData]);
 
-  useEffect(() => {
-    setCoverImage(coverImages[0]);
-    let coverImageRow = coverImages.slice(imageRow.start, imageRow.end);
-    setCoverImagesRow(coverImageRow);
-  }, [coverImages]);
+  //  useEffect(() => {
+  //    if (
+  //      coverImages !== undefined &&
+  //      coverImages !== null &&
+  //      coverImages.length > 0
+  //    ) {
+  //      setCoverImage(coverImages[0]);
+  //    }
+  //  }, [coverImages]);
+
+  // useEffect(() => {
+  //   setAiFormData(formData);
+  // }, [formData]);
+  //  console.log("coverImages");
+  //  console.log({ "coverImages222 ": coverImages });
+  //  console.log({ "coverImage2233333 ": coverImage });
+
+  const getImageUrl = (e) => {
+    var file = e.target.files[0];
+    const data = new FormData();
+    data.append("Filedata", file);
+    setCoverImage("#");
+
+    const resp = BaseService({
+      url: "/Upload",
+      method: "POST",
+      data: data,
+      headers: {
+        UserToken:
+          "DGj+TUGtk9GERZJMnE0yy7NKGyMtAnntAliL/ysncrTMy7AesbCuRm47xGRboG/yny1rw6YPkEpheA/xfrF4sKyLJvUjLObOXLkrHFqveuwzxq14iP/0daHWGrPT0bR5siVqO7SKbTDsCansW5+6kSSkQfKJ+V7VCLlyJMeKXWJgMdy4hhUad4Y6oqgQnXZVJJF3lZQrMwLWrgVQpFZvRNVygJ9q03ALLVnw71Pwrac=",
+        AcitivityIds: "1",
+        FingerPrintKey: "readability",
+      },
+    })
+      .then((response) => {
+        console.log("img response", response.data);
+        const img = `https://dev-app.readabilitytutor.com/imgs${response.data.Data.FilePath.slice(
+          6
+        )}`;
+        setCoverImagesRow([img]);
+        setCoverImage(img);
+        setCoverImages([img]);
+      })
+      .catch((err) => {
+        console.log("error", err);
+      });
+  };
 
   return (
     <>
@@ -251,7 +307,6 @@ const BookInfo = (props) => {
                 </Grid>
               </Grid>
             </Box>
-
             <Box>
               <Grid container spacing={2}>
                 <Grid item xs={2}>
@@ -280,7 +335,7 @@ const BookInfo = (props) => {
                     }}
                     className={styles.boxInput}
                   />
-                  <Typography className={styles.inputLabel}>
+                  {/* <Typography className={styles.inputLabel}>
                     Art Theme:
                   </Typography>
                   <Box>
@@ -294,7 +349,7 @@ const BookInfo = (props) => {
                       <option>Water Color</option>
                       <option>Oil Painting</option>
                     </select>
-                  </Box>
+                  </Box> */}
                   <Box sx={{ marginBlock: "24px" }}>
                     <Button
                       style={{
@@ -329,11 +384,7 @@ const BookInfo = (props) => {
                         input.type = "file";
                         input.style.display = "none";
                         input.onchange = function (e) {
-                          var file = e.target.files[0];
-                          const selectedImage = URL.createObjectURL(file);
-
-                          setCoverImagesRow([selectedImage]);
-                          setCoverImage(selectedImage);
+                          getImageUrl(e);
                         };
                         document.body.appendChild(input);
                         input.click();
@@ -345,8 +396,8 @@ const BookInfo = (props) => {
                   </Box>
                 </Grid>
               </Grid>
-              <Grid container xs={7} style={{ marginBottom: "16px" }}>
-                <FormControl FormControl>
+              <Grid container style={{ marginBlock: "16px" }}>
+                <FormControl>
                   <RadioGroup
                     aria-labelledby="radio-buttons-group-label"
                     name="radio-buttons-group"
@@ -356,19 +407,70 @@ const BookInfo = (props) => {
                       setCoverImage(e.target.value);
                     }}
                   >
-                    {coverImagesRow.length > 0 &&
-                      coverImagesRow.map((item) => (
-                        <Imagebox
-                          onClick={() => setCoverImage(item)}
-                          key={item}
-                          url={item}
-                          value={item}
-                        />
-                      ))}
+                    {coverImages.length > 8 && (
+                      <p
+                        style={{
+                          cursor: "pointer",
+                          fontSize: "35px",
+                          marginTop: "8%",
+                          marginRight: "4px",
+                        }}
+                        onClick={() => {
+                          if (imageRow.start > 0) {
+                            const start = imageRow.start - 1;
+                            const end = imageRow.end - 1;
+                            setImageRow((prev) => ({
+                              start: prev.start - 1,
+                              end: prev.end - 1,
+                            }));
+                            const newImagesRow = coverImages.slice(start, end);
+                            setCoverImagesRow(newImagesRow);
+                          }
+                        }}
+                      >
+                        {"<"}
+                      </p>
+                    )}
+                    {coverImagesRow.length > 0 && (
+                      <>
+                        {coverImagesRow.map((item) => (
+                          <Imagebox
+                            onClick={() => setCoverImage(item)}
+                            key={item}
+                            url={item}
+                            value={item}
+                          />
+                        ))}
+                      </>
+                    )}
+                    {coverImages.length > 8 && (
+                      <p
+                        style={{
+                          cursor: "pointer",
+                          fontSize: "35px",
+                          marginTop: "8%",
+                          marginLeft: "4px",
+                        }}
+                        onClick={() => {
+                          if (imageRow.end < coverImages.length) {
+                            const start = imageRow.start + 1;
+                            const end = imageRow.end + 1;
+                            setImageRow((prev) => ({
+                              start: prev.start + 1,
+                              end: prev.end + 1,
+                            }));
+                            const newImagesRow = coverImages.slice(start, end);
+                            setCoverImagesRow(newImagesRow);
+                          }
+                        }}
+                      >
+                        {">"}
+                      </p>
+                    )}
                   </RadioGroup>
                 </FormControl>
               </Grid>
-              {coverImagesRow.length > 0 && (
+              {/* {coverImagesRow.length > 0 && (
                 <div
                   className="myRow"
                   style={{
@@ -381,14 +483,13 @@ const BookInfo = (props) => {
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       if (imageRow.start > 0) {
+                        const start = imageRow.start - 1;
+                        const end = imageRow.end - 1;
                         setImageRow((prev) => ({
                           start: prev.start - 1,
                           end: prev.end - 1,
                         }));
-                        const newImagesRow = coverImages.slice(
-                          imageRow.start,
-                          imageRow.end
-                        );
+                        const newImagesRow = coverImages.slice(start, end);
                         setCoverImagesRow(newImagesRow);
                       }
                     }}
@@ -399,21 +500,21 @@ const BookInfo = (props) => {
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       if (imageRow.end < coverImages.length) {
+                        const start = imageRow.start + 1;
+                        const end = imageRow.end + 1;
                         setImageRow((prev) => ({
                           start: prev.start + 1,
                           end: prev.end + 1,
                         }));
-                        coverImagesRow = coverImages.slice(
-                          imageRow.start,
-                          imageRow.end
-                        );
+                        const newImagesRow = coverImages.slice(start, end);
+                        setCoverImagesRow(newImagesRow);
                       }
                     }}
                   >
                     {">"}
                   </p>
                 </div>
-              )}
+              )} */}
             </Box>
           </Box>
         </Box>

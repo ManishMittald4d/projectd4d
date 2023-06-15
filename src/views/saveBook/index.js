@@ -8,6 +8,8 @@ import LoadingOverlay from "react-loading-overlay";
 import styles from "./kycForm.module.css";
 import { Button } from "@mui/material";
 import BaseService from "services/BaseService";
+import { Alert, Notification, toast } from "components/ui";
+import useTimeOutMessage from "utils/hooks/useTimeOutMessage";
 
 function SaveBook() {
   const [coverImages, setCoverImages] = useState([]);
@@ -17,12 +19,20 @@ function SaveBook() {
   const [exportableJSON, setExportableJSON] = useState({});
   const [editingImage, setEditingImage] = useState(null);
   const [newImage, setNewImage] = useState("");
+  const [newBookImage, setNewBookImage] = useState("");
+  const [newPageImage, setNewPageImage] = useState("");
+  const [message, setMessage] = useTimeOutMessage();
   const [exportingJson, setExportingJson] = useState(false);
-  const [apiCallNumber, setApiCallNumber] = useState(0);
+  let [apiCallNumber, setApiCallNumber] = useState(0);
 
-  const generateImage = async (coverImageData, editing = null) => {
+  const generateImage = async (
+    coverImageData,
+    editing = null,
+    multipleGenerate = null
+  ) => {
     setLoading(true);
     setEditingImage(editing);
+    // setNewBookImage([]);
     const bookReqData = {
       imageCount: coverImageData.imageCount,
       imageFormat: "url",
@@ -33,15 +43,37 @@ function SaveBook() {
       "https://predev-api.readabilitytutor.com/AI/v1/GenerateImage",
       bookReqData
     );
-    console.log("cover Images", resp.data);
-    if (editing) {
+
+    if (editing === 1) {
+      //page
+      setNewPageImage(resp.data.Data.Urls[0]);
+    } else if (editing === 2) {
+      //book single image from bookinfo regenerate image
       setNewImage(resp.data.Data.Urls);
+      setNewBookImage(resp.data.Data.Urls);
+      setCoverImages(resp.data.Data.Urls);
     } else {
+      setNewBookImage(resp.data.Data.Urls);
       setCoverImages(resp.data.Data.Urls);
     }
+
+    if (multipleGenerate > 0 && resp?.data?.Data && resp?.data?.Data?.Urls) {
+      setNewPageImage(resp.data.Data.Urls[0]);
+    }
+
     setLoading(false);
     return resp.data.Data.Urls[0];
     // setEditingImage(false);
+  };
+
+  const NoApiJson = (data) => {
+    const formResp = JSON.parse(data);
+    setAiFormData(formResp);
+
+    if (!!formResp && !!formResp.Story) {
+    } else {
+      alert("Please check your Json Again as something is missing");
+    }
   };
 
   const getFormData = async (formData, coverImageData, myImage) => {
@@ -53,9 +85,32 @@ function SaveBook() {
     );
 
     const data = formResp.data.Data;
+    console.log("formResp", formResp);
+
     if ((!data || formResp.status === 500) && apiCallNumber < 4) {
-      setApiCallNumber(apiCallNumber + 1);
-      return getFormData(formData);
+      setApiCallNumber((prev) => prev + 1);
+
+      toast.push(
+        <Notification title={"Retrying"} type="warning">
+          Request is still in progress, please wait
+        </Notification>
+      );
+      setMessage("Request is still in progress, please wait");
+      alert("Request is still in progress, please wait");
+
+      return getFormData(formData, coverImageData, myImage);
+    } else if ((!data || formResp.status === 500) && apiCallNumber >= 4) {
+      toast.push(
+        <Notification title={"Error"} type="error">
+          Error: Some issue on API side, Please try again
+        </Notification>
+      );
+      setMessage(
+        "Error: Some issue on API side to generate book data, please try again"
+      );
+      alert(
+        "Some issue on API side to generate book data, please refresh the page and try again"
+      );
     }
     const response = data
       ? {
@@ -65,17 +120,19 @@ function SaveBook() {
         }
       : data;
     // setAiFormData(response);
-    console.log("formResp", formResp.data);
     setLoading(false);
     let body = "";
     let arr = [];
-
+    //    console.log(coverImageData);
     formResp.data.Data.Story &&
       formResp.data.Data.Story.map((item) => {
         body += item.PageText;
         let value = {
           ...item,
-          illustration: coverImageData.illustration ? myImage : "",
+          illustration:
+            coverImageData !== undefined && coverImageData.illustration
+              ? myImage
+              : "",
         };
         arr.push(value);
       });
@@ -90,10 +147,20 @@ function SaveBook() {
 
   const getbookData = async (coverImageData, formData) => {
     setLoading(true);
+    setNewBookImage([]);
+    setNewImage([]);
+    setCoverImages([]);
+    //setExportingJson(false);
+    //setAiFormData({});
+    //setNewPreview("");
+    //setExportableJSON({});
+    setEditingImage(null);
+    setNewPageImage("");
+
     try {
       let myImage = "";
-      if (coverImageData.getCoverImage) {
-        myImage = await generateImage(coverImageData);
+      if (coverImageData !== undefined && coverImageData.getCoverImage) {
+        myImage = await generateImage(coverImageData, null, 3);
       }
       await getFormData(formData, coverImageData, myImage);
     } catch (err) {
@@ -104,6 +171,10 @@ function SaveBook() {
 
   const getNewPreview = (preview) => {
     setNewPreview(preview);
+  };
+
+  const setImagesIndex = (image) => {
+    setNewImage(image);
   };
 
   const exportJson = async () => {
@@ -120,29 +191,94 @@ function SaveBook() {
       Story,
     } = aiFormData;
 
-    const bookURL = newImage?.split("/") || coverImages[0]?.split("/") || "";
-    const fileName = bookURL && bookURL?.pop();
-    const docList = [
+    let bookURL = "";
+
+    //    console.log(newImage);
+
+    if (!!newImage && Array.isArray(newImage) && newImage.length > 0) {
+      bookURL = newImage[0];
+    } else if (!!newImage && newImage !== "") {
+      bookURL = newImage;
+    } else if (
+      !!coverImages &&
+      Array.isArray(coverImages) &&
+      coverImages.length > 0
+    ) {
+      bookURL = coverImages[0];
+    } else if (!!coverImages && coverImages !== "") {
+      bookURL = coverImages;
+    }
+
+    let fileName = bookURL;
+
+    //     console.log(bookURL);
+    if (!!bookURL && bookURL !== "" && !Array.isArray(bookURL)) {
+      fileName = bookURL?.split("/") || "";
+      fileName = fileName?.pop();
+    } else if (
+      !!bookURL &&
+      Array.isArray(bookURL) &&
+      bookURL.length > 0 &&
+      bookURL[0] !== ""
+    ) {
+      fileName = bookURL[0]?.split("/") || "";
+      fileName = fileName?.pop();
+    }
+    //    console.log(fileName);
+
+    let docList = [
       {
         fileName: fileName,
-        FilePath: coverImages[0],
+        FilePath: bookURL,
         DocumentTypeId: 2,
         DocumentPurposeTypeId: 1,
         DocumentForId: 2,
       },
     ];
+    if (
+      coverImages === null ||
+      coverImages === undefined ||
+      coverImages.length < 1
+    ) {
+      docList = null;
+    }
     let ExtraList = [];
     let Extra2List = [];
-
+    //    console.log(Story);
     Story.length > 0 &&
       Story.forEach((story, index) => {
         const title = `Chapter ${index + 1} : ${Title[0]}`;
+
+        let storyDocList = null;
+        let storyBookURL = "";
+        let storyFileName = "";
+        if (!!story.illustration && story.illustration.length > 0) {
+          storyBookURL = story.illustration[0];
+        } else if (!!story.illustration && story.illustration !== "") {
+          storyBookURL = story.illustration;
+        }
+
+        if (!!storyBookURL && storyBookURL !== "") {
+          storyBookURL = storyBookURL?.split("/") || "";
+          storyBookURL = storyBookURL?.pop();
+          storyFileName = storyBookURL;
+          storyDocList = [
+            {
+              fileName: storyFileName,
+              FilePath: story.illustration,
+              DocumentTypeId: 2,
+              DocumentPurposeTypeId: 1,
+              DocumentForId: 2,
+            },
+          ];
+        }
+
         ExtraList.push({
           Title: title,
           PageNumber: index + 1,
           Text: `${story.PageText}\r\n`,
           IsActive: true,
-          DocumentList: docList,
+          DocumentList: storyDocList,
         });
 
         story.Questions.forEach((qes) => {
@@ -166,12 +302,13 @@ function SaveBook() {
         });
       });
 
+    //    console.log(docList);
     const json = {
-      Title: Title.join(", "),
-      Tags: Tags.join(", "),
-      Genre: Genre.join(", "),
-      Grade: Grade.toString(),
-      SightWords: SightWords.join(", "),
+      Title: Array.isArray(Title) ? Title.join(", ") : Title,
+      Tags: Array.isArray(Tags) ? Tags.join(", ") : Tags,
+      Genre: Array.isArray(Genre) ? Genre.join(", ") : Genre,
+      Grade: Array.isArray(Grade) ? Grade.toString() : Grade,
+      SightWords: Array.isArray(Title) ? SightWords.join(", ") : SightWords,
       ARScore: ARScore.toString(),
       LexileLevelMin: LexileLevelMin,
       LexileLevelMax: LexileLevelMax,
@@ -188,7 +325,7 @@ function SaveBook() {
       BookURL: coverImages[0],
     };
     setExportableJSON(json);
-
+    setLoading(true);
     const resp = await BaseService({
       url: "/Book/ePubImportSave",
       method: "POST",
@@ -201,12 +338,39 @@ function SaveBook() {
         FingerPrintKey: "readability",
       },
     });
+
+    if (resp?.data?.Data?.BookId > 0) {
+      toast.push(
+        <Notification title={"Book Exported"} type="success">
+          Book Data Saved successfully
+        </Notification>
+      );
+      setMessage("Book Data Saved successfully");
+    } else {
+      toast.push(
+        <Notification title={"Error"} type="error">
+          Error: Some issue on API side
+        </Notification>
+      );
+      setMessage("Error: Some issue on API side");
+    }
+
     setExportingJson(false);
-    console.log("jsonresp", resp.data);
+    setLoading(false);
+    setCoverImages([]);
+    setAiFormData({});
+    setNewPreview("");
+    setExportableJSON({});
+    setEditingImage(null);
+    setNewImage("");
+    setNewBookImage("");
+    setNewPageImage("");
+    setExportingJson(false);
+    setApiCallNumber(0);
   };
 
   const updateExportableJson = (newData) => {
-    console.log("newdata", newData);
+    //    console.log("newdata", newData);
     if (newData.illustration) {
       delete newData["illustration"];
     }
@@ -224,35 +388,50 @@ function SaveBook() {
         className={loading ? styles.loader : ""}
       >
         <>
-          <Page1 getbookData={getbookData} newPreview={newPreview} />
-          <BookInfo
-            coverImages={editingImage == 2 ? newImage : coverImages}
-            aiFormData={aiFormData}
-            setAiFormData={setAiFormData}
-            getNewPreview={getNewPreview}
-            generateImage={generateImage}
-            loading={loading}
+          <Page1
+            getbookData={getbookData}
+            newPreview={newPreview}
+            NoApiJson={NoApiJson}
           />
-          <Pages
-            pageData={aiFormData}
-            illustration={editingImage == 1 ? newImage[0] : coverImages[0]}
-            generateImage={generateImage}
-            loading={loading}
-            updateExportableJson={updateExportableJson}
-          />
-          <Comprehension
-            pageData={aiFormData}
-            updateExportableJson={updateExportableJson}
-          />
-          <Button
-            className={styles.exportBtn}
-            disabled={aiFormData?.Title || !exportingJson ? false : true}
-            onClick={exportJson}
-          >
-            Export JSON
-          </Button>
+          {aiFormData.Story && (
+            <>
+              <BookInfo
+                coverImages={newBookImage}
+                aiFormData={aiFormData}
+                setAiFormData={setAiFormData}
+                getNewPreview={getNewPreview}
+                generateImage={generateImage}
+                loading={loading}
+                setImagesIndex={setImagesIndex}
+                setCoverImages={setCoverImages}
+              />
+              <Pages
+                pageData={aiFormData}
+                illustration={newPageImage}
+                generateImage={generateImage}
+                loading={loading}
+                updateExportableJson={updateExportableJson}
+              />
+              <Comprehension
+                pageData={aiFormData}
+                updateExportableJson={updateExportableJson}
+              />
+              <Button
+                className={styles.exportBtn}
+                disabled={aiFormData?.Title || !exportingJson ? false : true}
+                onClick={exportJson}
+              >
+                Export JSON
+              </Button>
+            </>
+          )}
         </>
       </LoadingOverlay>
+      {message && (
+        <Alert className="mb-4" showIcon>
+          {message}
+        </Alert>
+      )}
     </div>
   );
 }

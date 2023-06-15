@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styles from "./analytics.module.css";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
-import axios from "axios";
 import BaseService from "services/BaseService";
 
 export default function ApiForm({ records, setRecords }) {
@@ -55,7 +54,8 @@ export default function ApiForm({ records, setRecords }) {
     };
     requestData.headers.map((item) => {
       if (item.key) {
-        header[item.key] = item.value;
+        const key = item.key.replaceAll(" ", "_");
+        header[key] = item.value;
       }
     });
     const body = isJsonString(requestData.body);
@@ -416,7 +416,7 @@ export default function ApiForm({ records, setRecords }) {
             </Box>
           </Grid>
 
-          <Box style={{ paddingInline: "8px", marginBlock: "40px" }}>
+          <Box style={{ paddingInline: "8px" }}>
             <Button
               className={styles.pageEndBtn}
               style={{
