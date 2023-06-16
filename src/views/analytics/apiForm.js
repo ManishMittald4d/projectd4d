@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./analytics.module.css";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import BaseService from "services/BaseService";
+import axios from "axios";
 
 export default function ApiForm({ records, setRecords }) {
   const [requestData, setRequestData] = useState({
@@ -74,19 +75,22 @@ export default function ApiForm({ records, setRecords }) {
     const { type, header, data } = apiData();
 
     try {
-      // const data = await axios[type](
-      //   `https://api.readabilititutor.com/${requestData.endpointUrl}`,
-      //   JSON.stringify(requestData.body),
-      //   { headers: header }
-      // );
-
-      const resp = await BaseService({
-        // url: "/Book/ePubImportSave",
-        url: `/${requestData.endpointUrl}`,
-        method: type,
-        data: data,
-        headers: header,
-      });
+      let resp;
+      if (requestData.endpointUrl.startsWith("http")) {
+        resp = await axios[type](
+          `${requestData.endpointUrl}`,
+          JSON.stringify(requestData.body),
+          { headers: header }
+        );
+      } else {
+        resp = await BaseService({
+          // url: "/Book/ePubImportSave",
+          url: `/${requestData.endpointUrl}`,
+          method: type,
+          data: data,
+          headers: header,
+        });
+      }
       console.log("response", resp);
     } catch (err) {
       console.log("error", err);
@@ -135,7 +139,7 @@ export default function ApiForm({ records, setRecords }) {
             >
               <Box className={styles.gridBox}>
                 <Typography className={styles.inputLabel}>
-                  EndpointUrl
+                  URL/Endpoints
                 </Typography>
                 <TextField
                   type="text"

@@ -4,7 +4,7 @@ import { setDrawerOpen } from "store/readability/readabilityStateSlice";
 import { Dialog, DialogTitle, Grid, Typography } from "@mui/material";
 import { MdCancel } from "react-icons/md";
 
-export default function Records({ records }) {
+export default function Records({ records, setPageNumber, selectedEndPoint }) {
   const [open, setOpen] = useState(false);
   const [detailsIndex, setDetailsIndex] = useState(0);
 
@@ -33,14 +33,25 @@ export default function Records({ records }) {
                   <td>{item.endpointTitle}</td>
                   <td>{item.endpointUrl}</td>
                   <td>{item.description}</td>
-                  <td
-                    onClick={() => {
-                      setOpen(true);
-                      setDetailsIndex(index);
-                    }}
-                    className={styles.viewBtn}
-                  >
-                    View
+                  <td style={{ width: "20%" }}>
+                    <button
+                      onClick={() => {
+                        setOpen(true);
+                        setDetailsIndex(index);
+                      }}
+                      className={styles.viewBtn}
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => {
+                        setPageNumber(2);
+                        selectedEndPoint(item);
+                      }}
+                      className={styles.viewBtn}
+                    >
+                      Add Chart
+                    </button>
                   </td>
                 </tr>
               );

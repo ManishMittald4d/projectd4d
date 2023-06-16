@@ -136,6 +136,10 @@ th:last-child {
 .viewBtn {
   color: blue;
   cursor: pointer;
+  background-color: #eaeaea;
+  padding: 6px 12px;
+  border-radius: 4px;
+  margin-inline: 3px;
 }
 
 .dialogBox > div > div {
@@ -146,4 +150,10 @@ th:last-child {
   right: 6px;
   top: 6px;
   font-size: 22px;
+}
+
+.loader {
+  height: 85vh;
+}
+.checkBox {
 }
