@@ -21,6 +21,18 @@ const graphTypes = [
     label: "Line Chart",
     value: "line",
   },
+  {
+    label: "Area Chart",
+    value: "area",
+  },
+  {
+    label: "Bar Chart",
+    value: "bar",
+  },
+  {
+    label: "Pie Chart",
+    value: "donut",
+  },
 ];
 
 export default function Graph({
@@ -32,12 +44,12 @@ export default function Graph({
 }) {
   const defaultSeries = {
     name: "",
-    type: "area",
+    type: graphTypes[1].value,
     data: [],
   };
   const defaultChartsData = {
     title: "",
-    type: "area",
+    type: graphTypes[1].value,
     description: "",
 
     axisData: {
@@ -72,7 +84,7 @@ export default function Graph({
   const [endPointTableData, setEndPointTableData] = useState({});
   const [apiData, setApiData] = useState({});
   const [allCharts, setAllCharts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState();
   const [defaultYAxis, setDefaultYAxis] = useState(false);
 
   const allEndPoints = [];
@@ -94,149 +106,83 @@ export default function Graph({
 
   const selectedEndpoints = (value) => {
     setLoading(true);
-    const num = Math.floor(Math.random() * (3 - 1 + 1) + 1);
-    // console.log(num);
-    // console.log(allEndPoints)
-    const selectedIndex = allEndPoints.indexOf(
-      (item) => item.label === value.label
-    );
-    let url = "https://healthcare.digital4design.in/api/json/columns";
-    // if (selectedIndex % 3 === 0) {
-    //   url = `https://healthcare.digital4design.in/api/json/columns`;
-    // }
-    // else if(selectedIndex % 2 === 0){
 
-    // }
-
-    axios
-      .get(url)
-      .then((resp) => {
-        const { data } = resp;
-        // console.log("tableResp", resp);
-        setApiData(data);
-        const d = Object.values(data);
-        setEndPointTableData({
-          headers: Object.keys(data),
-          body: d[0].map((column, i) => d.map((values, r) => values[i])),
-        });
-        setShowTable(true);
-
-        const charts = localStorage.getItem("allApiCharts")
-          ? JSON.parse(localStorage.getItem("allApiCharts"))
-          : [];
-
-        const myCharts =
-          Array.isArray(charts) && charts.length > 0
-            ? charts.filter((item) => item.endPointTitle === value.label)
-            : [];
-        const chartArr = [];
-        myCharts.map((item) => {
-          chartArr.push(item.chartsData);
-        });
-        setMyCharts([...chartArr]);
-        setAllCharts([...charts]);
-      })
-      .catch((err) => {
-        console.log(err);
+    setTimeout(() => {
+      let selectedIndex;
+      allEndPoints.map((item, i) => {
+        if (item.label === value.label) selectedIndex = i;
       });
 
-    setEndPoints(value);
-    setOpen(false);
-    setLoading(false);
+      const endNumbers = [1, 2, 3];
+      const firstNumber = endNumbers[0];
+      const lastNumber = endNumbers.slice(-1)[0];
+      const urlEnd = {};
+
+      allEndPoints.map((_, index) => {
+        const lastValue = Object.values(urlEnd).pop();
+        if (!lastValue || lastValue === lastNumber) {
+          urlEnd[index] = firstNumber;
+        } else {
+          urlEnd[index] = endNumbers[endNumbers.indexOf(lastValue) + 1];
+        }
+      });
+
+      let url = `https://healthcare.digital4design.in/api/json/columns/${urlEnd[selectedIndex]}`;
+      axios
+        .get(url)
+        .then((resp) => {
+          const { data } = resp;
+          setApiData(data);
+          const d = Object.values(data);
+          setEndPointTableData({
+            headers: Object.keys(data),
+            body: d[0].map((column, i) => d.map((values, r) => values[i])),
+          });
+          setShowTable(true);
+
+          const charts = localStorage.getItem("allApiCharts")
+            ? JSON.parse(localStorage.getItem("allApiCharts"))
+            : [];
+
+          const myCharts =
+            Array.isArray(charts) && charts.length > 0
+              ? charts.filter((item) => item.endPointTitle === value.label)
+              : [];
+          const chartArr = [];
+          myCharts.map((item) => {
+            chartArr.push(item.chartsData);
+          });
+          setMyCharts([...chartArr]);
+          setAllCharts([...charts]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setTimeout(() => {
+        setEndPoints(value);
+        setOpen(false);
+        setLoading(false);
+      });
+    });
   };
 
   useEffect(() => {
     const value = {
       value: getEndPoint.endpointUrl,
       label: getEndPoint.endpointTitle,
+      index: getEndPoint.index,
     };
     getEndPoint && selectedEndpoints(value);
   }, []);
 
-  console.log("chartsData", chartsData);
-  // console.log("allCharts", myCharts);
-
-  const graphData = {
-    theme: "light2",
-    animationEnabled: true,
-    title: {
-      text: "Units Sold VS Profit",
-    },
-    subtitles: [
-      {
-        text: "Click Legend to Hide or Unhide Data Series",
-      },
-    ],
-    axisX: {
-      title: "States",
-      titleFontColor: "#C24642",
-    },
-    axisX2: {
-      title: "Axis X - 2 Title",
-    },
-    axisY: {
-      title: "Units Sold",
-      titleFontColor: "#6D78AD",
-      lineColor: "#6D78AD",
-      labelFontColor: "#6D78AD",
-      tickColor: "#6D78AD",
-    },
-    axisY2: {
-      title: "Profit in USD",
-      titleFontColor: "#51CDA0",
-      lineColor: "#51CDA0",
-      labelFontColor: "#51CDA0",
-      tickColor: "#51CDA0",
-    },
-    toolTip: {
-      shared: true,
-    },
-    data: [
-      {
-        type: "splineArea",
-        axisXType: "secondary",
-        axisXIndex: 0,
-        name: "Units Sold",
-        color: "green",
-        fillOpacity: 0.15,
-        showInLegend: true,
-        xValueFormatString: "MMM YYYY",
-        yValueFormatString: "#,##0 Units",
-        dataPoints: [
-          { x: new Date(2017, 0, 1), y: 120 },
-          { x: new Date(2017, 1, 1), y: 135 },
-          { x: new Date(2017, 2, 1), y: 144 },
-          { x: new Date(2017, 3, 1), y: 103 },
-          { x: new Date(2017, 4, 1), y: 93 },
-          { x: new Date(2017, 5, 1), y: 129 },
-          { x: new Date(2017, 6, 1), y: 143 },
-        ],
-      },
-      {
-        type: "splineArea",
-        name: "Profit",
-        axisYType: "secondary",
-        axisXIndex: 1,
-        fillOpacity: 0.15,
-        color: "red",
-        showInLegend: true,
-        xValueFormatString: "MMM YYYY",
-        yValueFormatString: "$#,##0.#",
-        dataPoints: [
-          { x: new Date(2017, 0, 1), y: 19034.5 },
-          { x: new Date(2017, 1, 1), y: 20015 },
-          { x: new Date(2017, 2, 1), y: 27342 },
-          { x: new Date(2017, 3, 1), y: 20088 },
-          { x: new Date(2017, 4, 1), y: 20234 },
-          { x: new Date(2017, 5, 1), y: 29034 },
-          { x: new Date(2017, 6, 1), y: 30487 },
-        ],
-      },
-    ],
-  };
-
+  console.log("loading", loading);
   return (
-    <Loading loading={loading} type={"default"} className={styles.loader}>
+    <Loading
+      loading={loading}
+      type={"default"}
+      // className={styles.loader}
+      // className={loading ? styles.loader : ""}
+    >
       <Box>
         {showTable && (
           <>
@@ -264,7 +210,7 @@ export default function Graph({
                     <tr key={i}>
                       <td>{i + 1}</td>
                       {row.map((cellData, i) => (
-                        <td key={cellData + i}>{cellData}</td>
+                        <td key={cellData + `${i}`}>{cellData}</td>
                       ))}
                     </tr>
                   ))}
@@ -311,10 +257,11 @@ export default function Graph({
                     setChartsData({ ...chartsData, type: type });
                   }}
                 >
-                  <option value="area">Area Chart</option>
-                  <option value="line">Line Chart</option>
-                  <option value="bar">Bar Chart</option>
-                  <option value="donut">Pie Chart</option>
+                  {graphTypes.map((item) => (
+                    <option value={item.value} key={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
                 </select>
               </Grid>
             </Grid>
@@ -322,7 +269,9 @@ export default function Graph({
             <Grid container my={1}>
               <Grid item xs={5}>
                 <Box>
-                  <Typography>X-Axis configs</Typography>
+                  <Typography className={styles.inputLabel}>
+                    X-Axis configs
+                  </Typography>
                   <Box className={styles.headersBox}>
                     <Typography className={styles.inputLabel}>
                       Axis title
@@ -395,9 +344,14 @@ export default function Graph({
               <Grid item xs={1} />
               <Grid item xs={5}>
                 <Box>
-                  <Typography>Y-Axis configs</Typography>
+                  <Typography className={styles.inputLabel}>
+                    Y-Axis configs
+                  </Typography>
                   <Box className={styles.headersBox}>
-                    <Typography className={styles.inputLabel}>
+                    <Typography
+                      className={styles.inputLabel}
+                      style={{ display: "flex" }}
+                    >
                       Axis values
                       <Checkbox
                         checked={defaultYAxis}
@@ -409,7 +363,9 @@ export default function Graph({
                       Default Values
                     </Typography>
                     <Grid item xs={12}>
-                      <Typography>Left Axis</Typography>
+                      <Typography className={styles.inputLabel}>
+                        Left Axis
+                      </Typography>
                       <Grid item xs={12} className={styles.headersBox}>
                         <Grid item xs={12}>
                           <Box>
@@ -447,7 +403,9 @@ export default function Graph({
                         <Grid container>
                           <Grid item xs={4}>
                             <Box>
-                              <Typography>Min</Typography>
+                              <Typography className={styles.inputLabel}>
+                                Min
+                              </Typography>
                               <TextField
                                 type="number"
                                 variant="outlined"
@@ -479,7 +437,9 @@ export default function Graph({
                           </Grid>
                           <Grid item xs={4} style={{ paddingInline: "12px" }}>
                             <Box>
-                              <Typography>Max</Typography>
+                              <Typography className={styles.inputLabel}>
+                                Max
+                              </Typography>
                               <TextField
                                 type="number"
                                 variant="outlined"
@@ -511,7 +471,9 @@ export default function Graph({
                           </Grid>
                           <Grid item xs={4}>
                             <Box>
-                              <Typography>Steps</Typography>
+                              <Typography className={styles.inputLabel}>
+                                Steps
+                              </Typography>
                               <TextField
                                 type="number"
                                 variant="outlined"
@@ -547,7 +509,12 @@ export default function Graph({
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography>Right Axis</Typography>
+                      <Typography
+                        className={styles.inputLabel}
+                        style={{ marginTop: "12px" }}
+                      >
+                        Right Axis
+                      </Typography>
                       <Grid item xs={12} className={styles.headersBox}>
                         <Grid item xs={12}>
                           <Box>
@@ -584,7 +551,9 @@ export default function Graph({
                         <Grid container>
                           <Grid item xs={4}>
                             <Box>
-                              <Typography>Min</Typography>
+                              <Typography className={styles.inputLabel}>
+                                Min
+                              </Typography>
                               <TextField
                                 type="number"
                                 variant="outlined"
@@ -616,7 +585,9 @@ export default function Graph({
                           </Grid>
                           <Grid item xs={4} style={{ paddingInline: "12px" }}>
                             <Box>
-                              <Typography>Max</Typography>
+                              <Typography className={styles.inputLabel}>
+                                Max
+                              </Typography>
                               <TextField
                                 type="number"
                                 variant="outlined"
@@ -648,7 +619,9 @@ export default function Graph({
                           </Grid>
                           <Grid item xs={4}>
                             <Box>
-                              <Typography>Steps</Typography>
+                              <Typography className={styles.inputLabel}>
+                                Steps
+                              </Typography>
                               <TextField
                                 type="number"
                                 variant="outlined"
@@ -792,9 +765,32 @@ export default function Graph({
                 });
                 setChartsData(defaultChartsData);
                 localStorage.setItem("allApiCharts", JSON.stringify(allCharts));
+                setTimeout(() => {
+                  window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: "smooth",
+                  });
+                });
               }}
             >
               Add Chart
+            </Button>
+            <Button
+              className={styles.pageEndBtn}
+              style={{
+                marginRight: "16px",
+              }}
+              onClick={() => {
+                setMyCharts([]);
+                const newCharts = allCharts.filter(
+                  (item) => item.endPointTitle !== endPoints.label
+                );
+                setAllCharts([...newCharts]);
+                setChartsData(defaultChartsData);
+                localStorage.setItem("allApiCharts", JSON.stringify(newCharts));
+              }}
+            >
+              Reset All
             </Button>
 
             {/* <CanvasJSChart options={graphData} /> */}
@@ -812,9 +808,13 @@ export default function Graph({
                 <Chart
                   options={{
                     title: { text: item.title },
-                    colors: item.type === "area" ? compreColor : COLORS,
+                    colors:
+                      item.type === graphTypes[1].value ? compreColor : COLORS,
                     stroke: {
                       curve: "smooth",
+                    },
+                    fill: {
+                      type: "gradient",
                     },
                     xaxis: {
                       title: {
@@ -850,8 +850,16 @@ export default function Graph({
                         },
                       },
                     },
+                    dataLabels: {
+                      enabled: item.type === graphTypes[3].value ? true : false,
+                    },
                   }}
-                  series={item.series}
+                  series={
+                    item.type === graphTypes[3].value
+                      ? item.series[0].data
+                      : item.series
+                  }
+                  type={item.type}
                   height={300}
                 />
               </div>
@@ -894,100 +902,3 @@ export default function Graph({
     </Loading>
   );
 }
-
-// <Grid container my={1} style={{ paddingInline: "8px" }}>
-// <Typography className={styles.inputLabel}>Graph Values </Typography>
-// <Box className={`${styles.gridBox} ${styles.headersBox}`}>
-//   {chartsData.graphData.map((values, i) => (
-//     <Grid container key={i} my={1}>
-//       <Grid item xs={6} pr={2}>
-//         <select
-//           className={`${styles.dropdown}`}
-//           placeholder={Object.keys(values)[0]}
-//           onChange={(e) => {
-//             const axisName =
-//               chartsData.graphData.length > 1
-//                 ? `x${chartsData.graphData.length - 1}-axis`
-//                 : `x-axis`;
-//             chartsData.graphData[i] = {
-//               ...values,
-//               [axisName]: e.target.value,
-//             };
-//             setChartsData({ ...chartsData });
-//           }}
-//           defaultValue={""}
-//         >
-//           <option value="" disabled>
-//             Select {Object.keys(values)[0]}
-//           </option>
-//           {endPointData.headers &&
-//             endPointData.headers.length > 0 &&
-//             endPointData.headers.map((header) => (
-//               <option>{header}</option>
-//             ))}
-//         </select>
-//       </Grid>
-//       <Grid item xs={6}>
-//         <select
-//           className={`${styles.dropdown}`}
-//           placeholder={Object.keys(values)[1]}
-//           onChange={(e) => {
-//             const axisName =
-//               chartsData.graphData.length > 1
-//                 ? `y${chartsData.graphData.length - 1}-axis`
-//                 : `y-axis`;
-//             chartsData.graphData[i] = {
-//               ...values,
-//               [axisName]: e.target.value,
-//             };
-//             setChartsData({ ...chartsData });
-//           }}
-//           defaultValue={""}
-//         >
-//           <option value="" disabled>
-//             Select {Object.keys(values)[1]}
-//           </option>
-//           {endPointData.headers &&
-//             endPointData.headers.length > 0 &&
-//             endPointData.headers.map((header) => (
-//               <option>{header}</option>
-//             ))}
-//         </select>
-//       </Grid>
-//       {
-//         <Grid item xs={1} style={{ alignSelf: "center" }}>
-//           {i === chartsData.axisColumns.length - 1 && (
-//             <Typography
-//               className={styles.headerActionBtn}
-//               onClick={() => {
-//                 const xAxisName = `x${chartsData.axisColumns.length}-axis`;
-//                 const yAxisName = `y${chartsData.axisColumns.length}-axis`;
-
-//                 chartsData.axisColumns.push({
-//                   [xAxisName]: "",
-//                   [yAxisName]: "",
-//                 });
-//                 setChartsData({ ...chartsData });
-//               }}
-//             >
-//               +
-//             </Typography>
-//           )}
-//           {chartsData.axisColumns.length - 1 === i && i > 0 && (
-//             <Typography
-//               className={styles.headerActionBtn}
-//               onClick={() => {
-//                 const newaxisColumns = chartsData.axisColumns;
-//                 newaxisColumns.splice(i, 1);
-//                 setChartsData({ ...chartsData });
-//               }}
-//             >
-//               -
-//             </Typography>
-//           )}
-//         </Grid>
-//       }
-//     </Grid>
-//   ))}
-// </Box>
-// </Grid>

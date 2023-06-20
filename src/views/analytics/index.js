@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ApiForm from "./apiForm";
 import Records from "./records";
 import { Button } from "@mui/material";
@@ -65,10 +65,12 @@ export default function Analytics() {
   const [open, setOpen] = useState(false);
   const [getEndPoint, setGetEndPoint] = useState(false);
 
-  console.log("records", records);
   const selectedEndPoint = (value) => {
     setGetEndPoint(value);
   };
+  useEffect(() => {
+    localStorage.setItem("apiRecords", JSON.stringify(deafultData));
+  }, []);
 
   return (
     <div style={{ marginInline: "2%" }}>

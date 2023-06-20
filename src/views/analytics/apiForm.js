@@ -71,7 +71,6 @@ export default function ApiForm({ records, setRecords }) {
   };
 
   const makeAPIRequest = async () => {
-    console.log("calling api");
     const { type, header, data } = apiData();
 
     try {
@@ -91,7 +90,6 @@ export default function ApiForm({ records, setRecords }) {
           headers: header,
         });
       }
-      console.log("response", resp);
     } catch (err) {
       console.log("error", err);
     }

@@ -155,5 +155,11 @@ th:last-child {
 .loader {
   height: 85vh;
 }
+.loader > div:first-child > div {
+  position: fixed;
+  left: 50%;
+  margin-top: 50vh;
+}
 .checkBox {
+  margin-inline: 8px;
 }
