@@ -1,8 +1,20 @@
 import React, { useState } from "react";
 import styles from "./analytics.module.css";
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
 import BaseService from "services/BaseService";
 import axios from "axios";
+import { analyticsData } from "mock/data/analyticsData";
 
 export default function ApiForm({ records, setRecords }) {
   const [requestData, setRequestData] = useState({
@@ -20,6 +32,8 @@ export default function ApiForm({ records, setRecords }) {
     headers: [{ key: "", value: "" }],
     body: "",
   });
+  const [open, setOpen] = useState(false);
+  const sampleData = { ...analyticsData, data: analyticsData.Data.slice(0, 2) };
 
   const makeDefault = () => {
     setRequestData({
@@ -74,30 +88,36 @@ export default function ApiForm({ records, setRecords }) {
     const { type, header, data } = apiData();
 
     try {
-      let resp;
-      if (requestData.endpointUrl.startsWith("http")) {
-        resp = await axios[type](
-          `${requestData.endpointUrl}`,
-          JSON.stringify(requestData.body),
-          { headers: header }
-        );
-      } else {
-        resp = await BaseService({
-          // url: "/Book/ePubImportSave",
-          url: `/${requestData.endpointUrl}`,
-          method: type,
-          data: data,
-          headers: header,
-        });
-      }
+      let resp = await BaseService({
+        // url: "/Book/ePubImportSave",
+        url: `/${requestData.endpointUrl}`,
+        method: type,
+        data: data,
+        headers: header,
+      });
     } catch (err) {
       console.log("error", err);
     }
+  };
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
     <>
       <Box className={styles.main}>
+        <Button
+          className={styles.pageEndBtn}
+          style={{
+            marginBlock: "0px !important",
+            marginBottom: "24px",
+          }}
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          Sample Response
+        </Button>
         <Box>
           <Grid container my={2}>
             <Grid
@@ -145,10 +165,18 @@ export default function ApiForm({ records, setRecords }) {
                   className={`${styles.boxInput}`}
                   value={requestData.endpointUrl}
                   onChange={(e) => {
-                    setRequestData({
-                      ...requestData,
-                      endpointUrl: e.target.value,
-                    });
+                    const value = e.target.value;
+                    if (requestData.endpointUrl.startsWith("http")) {
+                      setRequestData({
+                        ...requestData,
+                        endpointUrl: value,
+                      });
+                    } else {
+                      setRequestData({
+                        ...requestData,
+                        endpointUrl: `https://predev-api.readabilitytutor.com/API/v1/${value}`,
+                      });
+                    }
                   }}
                 />
               </Box>
@@ -450,6 +478,39 @@ export default function ApiForm({ records, setRecords }) {
           </Box>
         </Box>
       </Box>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Sample Response Data"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <textarea
+              style={{
+                width: "480px",
+                height: "400px",
+                minHeight: "70px",
+                margin: "40px",
+                border: "1px solid #ccc",
+                outline: "none",
+              }}
+              value={JSON.stringify(sampleData)}
+              readOnly
+            ></textarea>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            Cancel
+          </Button>
+          <Button onClick={handleClose}>Okay</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

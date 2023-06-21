@@ -9,7 +9,8 @@ export default function Analytics() {
   const deafultData = [
     {
       endpointTitle: "Bussiness analyses",
-      endpointUrl: "bussiness/analyses",
+      endpointUrl:
+        "https://predev-api.readabilitytutor.com/API/v1/bussiness/analyses",
       description: "Analyses of bussiness's financial situation and assets ",
       requestType: "GET",
       isActive: true,
@@ -25,7 +26,8 @@ export default function Analytics() {
     },
     {
       endpointTitle: "Country Records",
-      endpointUrl: "country_data",
+      endpointUrl:
+        "https://predev-api.readabilitytutor.com/API/v1/country_data",
       description: "All required data of a country",
       requestType: "GET",
       isActive: true,
@@ -41,7 +43,7 @@ export default function Analytics() {
     },
     {
       endpointTitle: "Budget Plan",
-      endpointUrl: "cost",
+      endpointUrl: "https://predev-api.readabilitytutor.com/API/v1/cost",
       description: "Planning budget according to cost in every department",
       requestType: "GET",
       isActive: true,
@@ -50,6 +52,38 @@ export default function Analytics() {
         userId: "usd72k9wg3",
         password: "Test1",
         token: "",
+      },
+      headers: {
+        Accept: "application/json",
+      },
+    },
+    {
+      endpointTitle: "Student Records",
+      endpointUrl: "https://predev-api.readabilitytutor.com/API/v1/cost",
+      description: "Records of students performence",
+      requestType: "GET",
+      isActive: true,
+      authorizationType: "BASIC",
+      authorization: {
+        userId: "ahsy73k0su6",
+        password: "Test4",
+        token: "",
+      },
+      headers: {
+        Accept: "application/json",
+      },
+    },
+    {
+      endpointTitle: "Group Details",
+      endpointUrl: "https://predev-api.readabilitytutor.com/API/v1/cost",
+      description: "Expenses details of the groups",
+      requestType: "GET",
+      isActive: true,
+      authorizationType: "BEARER",
+      authorization: {
+        userId: "",
+        password: "",
+        token: "lsiyr9we8yrcn9pgh8qo7tg8wygwghdj948dkwgfk",
       },
       headers: {
         Accept: "application/json",

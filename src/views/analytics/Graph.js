@@ -15,6 +15,7 @@ import { Chart, Loading } from "components/shared";
 import { COLORS, compreColor } from "constants/chart.constant";
 import axios from "axios";
 import { useEffect } from "react";
+import { analyticsData } from "mock/data/analyticsData";
 
 const graphTypes = [
   {
@@ -84,7 +85,7 @@ export default function Graph({
   const [endPointTableData, setEndPointTableData] = useState({});
   const [apiData, setApiData] = useState({});
   const [allCharts, setAllCharts] = useState([]);
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
   const [defaultYAxis, setDefaultYAxis] = useState(false);
 
   const allEndPoints = [];
@@ -108,56 +109,75 @@ export default function Graph({
     setLoading(true);
 
     setTimeout(() => {
-      let selectedIndex;
-      allEndPoints.map((item, i) => {
-        if (item.label === value.label) selectedIndex = i;
-      });
+      //
+      // let selectedIndex;
+      // allEndPoints.map((item, i) => {
+      //   if (item.label === value.label) selectedIndex = i;
+      // });
 
-      const endNumbers = [1, 2, 3];
-      const firstNumber = endNumbers[0];
-      const lastNumber = endNumbers.slice(-1)[0];
-      const urlEnd = {};
+      // const endNumbers = [1, 2, 3];
+      // const firstNumber = endNumbers[0];
+      // const lastNumber = endNumbers.slice(-1)[0];
+      // const urlEnd = {};
 
-      allEndPoints.map((_, index) => {
-        const lastValue = Object.values(urlEnd).pop();
-        if (!lastValue || lastValue === lastNumber) {
-          urlEnd[index] = firstNumber;
-        } else {
-          urlEnd[index] = endNumbers[endNumbers.indexOf(lastValue) + 1];
-        }
-      });
+      // allEndPoints.map((_, index) => {
+      //   const lastValue = Object.values(urlEnd).pop();
+      //   if (!lastValue || lastValue === lastNumber) {
+      //     urlEnd[index] = firstNumber;
+      //   } else {
+      //     urlEnd[index] = endNumbers[endNumbers.indexOf(lastValue) + 1];
+      //   }
+      // });
 
-      let url = `https://healthcare.digital4design.in/api/json/columns/${urlEnd[selectedIndex]}`;
-      axios
-        .get(url)
-        .then((resp) => {
-          const { data } = resp;
-          setApiData(data);
-          const d = Object.values(data);
-          setEndPointTableData({
-            headers: Object.keys(data),
-            body: d[0].map((column, i) => d.map((values, r) => values[i])),
-          });
-          setShowTable(true);
+      // let url = `https://healthcare.digital4design.in/api/json/columns/${urlEnd[selectedIndex]}`;
+      // axios
+      //   .get(url)
+      //   .then((resp) => {
+      //     const { data } = resp;
+      //
+      // const data = analyticsData.Data;
+      let data = {};
 
-          const charts = localStorage.getItem("allApiCharts")
-            ? JSON.parse(localStorage.getItem("allApiCharts"))
-            : [];
-
-          const myCharts =
-            Array.isArray(charts) && charts.length > 0
-              ? charts.filter((item) => item.endPointTitle === value.label)
-              : [];
-          const chartArr = [];
-          myCharts.map((item) => {
-            chartArr.push(item.chartsData);
-          });
-          setMyCharts([...chartArr]);
-          setAllCharts([...charts]);
-        })
-        .catch((err) => {
-          console.log(err);
+      analyticsData.Data.map((values, index) => {
+        Object.keys(values).map((item) => {
+          if (data[item] && Array.isArray(data[item])) {
+            data[item] = [...data[item], values[item]];
+          } else {
+            data[item] = [values[item]];
+          }
         });
+      });
+      console.log("newData", data);
+
+      setApiData(data);
+      const d = Object.values(data);
+      setEndPointTableData({
+        headers: Object.keys(data),
+        body: d[0].map((column, i) => d.map((values, r) => values[i])),
+      });
+      setShowTable(true);
+
+      const charts = localStorage.getItem("allApiCharts")
+        ? JSON.parse(localStorage.getItem("allApiCharts"))
+        : [];
+
+      const myCharts =
+        Array.isArray(charts) && charts.length > 0
+          ? charts.filter((item) => item.endPointTitle === value.label)
+          : [];
+      const chartArr = [];
+      myCharts.map((item) => {
+        chartArr.push(item.chartsData);
+      });
+      setMyCharts([...chartArr]);
+      setAllCharts([...charts]);
+
+      //
+      // })
+      // .catch((err) => {
+      //   console.log(err);
+      // });
+      //
       setTimeout(() => {
         setEndPoints(value);
         setOpen(false);
@@ -180,7 +200,7 @@ export default function Graph({
     <Loading
       loading={loading}
       type={"default"}
-      // className={styles.loader}
+      className={styles.loader}
       // className={loading ? styles.loader : ""}
     >
       <Box>
@@ -189,37 +209,42 @@ export default function Graph({
             <Typography variant="h4" my={2}>
               {endPoints.label}
             </Typography>
-            <table
-              className={`table table-bordered border-dark ${styles.table}`}
-              style={{ marginBlock: "24px" }}
+            <Box
+            // style={{ border: "1px solid #333" }}
             >
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  {endPointTableData.headers &&
-                    endPointTableData.headers.length > 0 &&
-                    endPointTableData.headers.map((header, i) => (
-                      <th key={header + 1}>{header}</th>
-                    ))}
-                </tr>
-              </thead>
-              <tbody>
-                {endPointTableData.body &&
-                  endPointTableData.body.length > 0 &&
-                  endPointTableData.body.map((row, i) => (
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      {row.map((cellData, i) => (
-                        <td key={cellData + `${i}`}>{cellData}</td>
-                      ))}
+              <Box className={styles.tableWrapper}>
+                <table
+                  className={`table table-bordered border-dark ${styles.table}`}
+                >
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      {endPointTableData.headers &&
+                        endPointTableData.headers.length > 0 &&
+                        endPointTableData.headers.map((header, i) => (
+                          <th key={header + 1}>{header}</th>
+                        ))}
                     </tr>
-                  ))}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    {endPointTableData.body &&
+                      endPointTableData.body.length > 0 &&
+                      endPointTableData.body.map((row, i) => (
+                        <tr key={i}>
+                          <td>{i + 1}</td>
+                          {row.map((cellData, i) => (
+                            <td key={cellData + `${i}`}>{cellData}</td>
+                          ))}
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </Box>
+            </Box>
 
             <Grid
               container
-              my={1}
+              my={2}
               style={{
                 height: "fit-content",
               }}
@@ -266,82 +291,7 @@ export default function Graph({
               </Grid>
             </Grid>
 
-            <Grid container my={1}>
-              <Grid item xs={5}>
-                <Box>
-                  <Typography className={styles.inputLabel}>
-                    X-Axis configs
-                  </Typography>
-                  <Box className={styles.headersBox}>
-                    <Typography className={styles.inputLabel}>
-                      Axis title
-                    </Typography>
-                    <Grid item xs={8}>
-                      <TextField
-                        type="text"
-                        variant="outlined"
-                        placeholder="X-axis Title"
-                        className={`${styles.boxInput}`}
-                        // value={chartsData.axisTitle.xAxis}
-                        value={chartsData.axisData.xAxis.title}
-                        onChange={(e) => {
-                          const newChartsData = {
-                            ...chartsData,
-                            axisData: {
-                              ...chartsData.axisData,
-                              xAxis: {
-                                ...chartsData.axisData.xAxis,
-                                title: e.target.value,
-                              },
-                            },
-                          };
-                          setChartsData({
-                            ...newChartsData,
-                          });
-                        }}
-                      />
-                    </Grid>
-                    <Typography className={styles.inputLabel}>
-                      Axis values
-                    </Typography>
-                    <Grid item xs={8}>
-                      <select
-                        className={`${styles.dropdown}`}
-                        value={chartsData.axisData.xAxis.name || ""}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          const labels = apiData[value];
-
-                          const newChartsData = {
-                            ...chartsData,
-                            axisData: {
-                              ...chartsData.axisData,
-                              xAxis: {
-                                ...chartsData.axisData.xAxis,
-                                values: labels,
-                                name: value,
-                              },
-                            },
-                          };
-                          setChartsData({
-                            ...newChartsData,
-                          });
-                        }}
-                      >
-                        <option value="" disabled>
-                          Select x-axis Labels
-                        </option>
-                        {endPointTableData.headers &&
-                          endPointTableData.headers.length > 0 &&
-                          endPointTableData.headers.map((header, i) => (
-                            <option key={header + 1}>{header}</option>
-                          ))}
-                      </select>
-                    </Grid>
-                  </Box>
-                </Box>
-              </Grid>
-              <Grid item xs={1} />
+            <Grid container my={2}>
               <Grid item xs={5}>
                 <Box>
                   <Typography className={styles.inputLabel}>
@@ -349,7 +299,7 @@ export default function Graph({
                   </Typography>
                   <Box className={styles.headersBox}>
                     <Typography
-                      className={styles.inputLabel}
+                      className={`${styles.inputLabel} ${styles.internalLabel}`}
                       style={{ display: "flex" }}
                     >
                       Axis values
@@ -369,7 +319,9 @@ export default function Graph({
                       <Grid item xs={12} className={styles.headersBox}>
                         <Grid item xs={12}>
                           <Box>
-                            <Typography className={styles.inputLabel}>
+                            <Typography
+                              className={`${styles.inputLabel} ${styles.internalLabel}`}
+                            >
                               Axis title
                             </Typography>
                             <TextField
@@ -403,7 +355,9 @@ export default function Graph({
                         <Grid container>
                           <Grid item xs={4}>
                             <Box>
-                              <Typography className={styles.inputLabel}>
+                              <Typography
+                                className={`${styles.inputLabel} ${styles.internalLabel}`}
+                              >
                                 Min
                               </Typography>
                               <TextField
@@ -437,7 +391,9 @@ export default function Graph({
                           </Grid>
                           <Grid item xs={4} style={{ paddingInline: "12px" }}>
                             <Box>
-                              <Typography className={styles.inputLabel}>
+                              <Typography
+                                className={`${styles.inputLabel} ${styles.internalLabel}`}
+                              >
                                 Max
                               </Typography>
                               <TextField
@@ -471,7 +427,9 @@ export default function Graph({
                           </Grid>
                           <Grid item xs={4}>
                             <Box>
-                              <Typography className={styles.inputLabel}>
+                              <Typography
+                                className={`${styles.inputLabel} ${styles.internalLabel}`}
+                              >
                                 Steps
                               </Typography>
                               <TextField
@@ -518,7 +476,9 @@ export default function Graph({
                       <Grid item xs={12} className={styles.headersBox}>
                         <Grid item xs={12}>
                           <Box>
-                            <Typography className={styles.inputLabel}>
+                            <Typography
+                              className={`${styles.inputLabel} ${styles.internalLabel}`}
+                            >
                               Axis title
                             </Typography>
                             <TextField
@@ -551,7 +511,9 @@ export default function Graph({
                         <Grid container>
                           <Grid item xs={4}>
                             <Box>
-                              <Typography className={styles.inputLabel}>
+                              <Typography
+                                className={`${styles.inputLabel} ${styles.internalLabel}`}
+                              >
                                 Min
                               </Typography>
                               <TextField
@@ -585,7 +547,9 @@ export default function Graph({
                           </Grid>
                           <Grid item xs={4} style={{ paddingInline: "12px" }}>
                             <Box>
-                              <Typography className={styles.inputLabel}>
+                              <Typography
+                                className={`${styles.inputLabel} ${styles.internalLabel}`}
+                              >
                                 Max
                               </Typography>
                               <TextField
@@ -619,7 +583,9 @@ export default function Graph({
                           </Grid>
                           <Grid item xs={4}>
                             <Box>
-                              <Typography className={styles.inputLabel}>
+                              <Typography
+                                className={`${styles.inputLabel} ${styles.internalLabel}`}
+                              >
                                 Steps
                               </Typography>
                               <TextField
@@ -659,9 +625,88 @@ export default function Graph({
                   </Box>
                 </Box>
               </Grid>
+              <Grid item xs={1} />
+              <Grid item xs={5}>
+                <Box>
+                  <Typography className={styles.inputLabel}>
+                    X-Axis configs
+                  </Typography>
+                  <Box className={styles.headersBox}>
+                    <Typography
+                      className={`${styles.inputLabel} ${styles.internalLabel}`}
+                    >
+                      Axis title
+                    </Typography>
+                    <Grid item xs={8}>
+                      <TextField
+                        type="text"
+                        variant="outlined"
+                        placeholder="X-axis Title"
+                        className={`${styles.boxInput}`}
+                        // value={chartsData.axisTitle.xAxis}
+                        value={chartsData.axisData.xAxis.title}
+                        onChange={(e) => {
+                          const newChartsData = {
+                            ...chartsData,
+                            axisData: {
+                              ...chartsData.axisData,
+                              xAxis: {
+                                ...chartsData.axisData.xAxis,
+                                title: e.target.value,
+                              },
+                            },
+                          };
+                          setChartsData({
+                            ...newChartsData,
+                          });
+                        }}
+                      />
+                    </Grid>
+                    <Typography
+                      className={`${styles.inputLabel} ${styles.internalLabel}`}
+                    >
+                      Axis values
+                    </Typography>
+                    <Grid item xs={8}>
+                      <select
+                        className={`${styles.dropdown}`}
+                        value={chartsData.axisData.xAxis.name || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const labels = apiData[value];
+
+                          const newChartsData = {
+                            ...chartsData,
+                            axisData: {
+                              ...chartsData.axisData,
+                              xAxis: {
+                                ...chartsData.axisData.xAxis,
+                                values: labels,
+                                name: value,
+                              },
+                            },
+                          };
+                          setChartsData({
+                            ...newChartsData,
+                          });
+                        }}
+                      >
+                        <option value="" disabled>
+                          Select x-axis Labels
+                        </option>
+                        {endPointTableData.headers &&
+                          endPointTableData.headers.length > 0 &&
+                          endPointTableData.headers.map((header, i) => (
+                            <option key={header + 1}>{header}</option>
+                          ))}
+                      </select>
+                    </Grid>
+                  </Box>
+                </Box>
+              </Grid>
             </Grid>
 
-            <Grid container my={1} xs={5}>
+            <Grid container my={2} xs={5}>
               <Box style={{ width: "100%" }}>
                 <Typography className={styles.inputLabel}>
                   Graph Values
@@ -730,7 +775,7 @@ export default function Graph({
                 </Box>
               </Box>
             </Grid>
-            <Grid container xs={5} my={1}>
+            <Grid container xs={5} my={2}>
               <Box className={styles.gridBox}>
                 <Typography className={styles.inputLabel}>
                   Description :
@@ -756,6 +801,7 @@ export default function Graph({
               style={{
                 marginRight: "16px",
               }}
+              disabled={chartsData.sw}
               onClick={() => {
                 myCharts.push(chartsData);
                 setMyCharts([...myCharts]);
