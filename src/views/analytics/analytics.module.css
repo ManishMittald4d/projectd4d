@@ -120,6 +120,9 @@
 .pageEndBtn:hover {
   background-color: #40e0d0 !important;
 }
+.pageEndBtn:disabled {
+  opacity: 50%;
+}
 .tableWrapper {
   overflow: auto;
 }

@@ -13,9 +13,9 @@ import { MdCancel } from "react-icons/md";
 import { Checkbox, Select } from "components/ui";
 import { Chart, Loading } from "components/shared";
 import { COLORS, compreColor } from "constants/chart.constant";
-import axios from "axios";
 import { useEffect } from "react";
 import { analyticsData } from "mock/data/analyticsData";
+import { Alert, Notification, toast } from "components/ui";
 
 const graphTypes = [
   {
@@ -186,6 +186,33 @@ export default function Graph({
     });
   };
 
+  const addNewChart = () => {
+    const newSeries = chartsData.series.filter((item) => item.data.length > 0);
+    const newChartsData = {
+      ...chartsData,
+      series: newSeries,
+    };
+    myCharts.push(newChartsData);
+    setMyCharts([...myCharts]);
+    allCharts.push({
+      endPointTitle: endPoints.label,
+      newChartsData,
+    });
+    setChartsData(defaultChartsData);
+    localStorage.setItem("allApiCharts", JSON.stringify(allCharts));
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+    toast.push(
+      <Notification title={"Success"} type="success">
+        new grapgh added successfully
+      </Notification>
+    );
+  };
+
   useEffect(() => {
     const value = {
       value: getEndPoint.endpointUrl,
@@ -195,7 +222,6 @@ export default function Graph({
     getEndPoint && selectedEndpoints(value);
   }, []);
 
-  console.log("loading", loading);
   return (
     <Loading
       loading={loading}
@@ -801,22 +827,12 @@ export default function Graph({
               style={{
                 marginRight: "16px",
               }}
-              disabled={chartsData.sw}
+              disabled={
+                chartsData.series.filter((item) => item.data.length > 0)
+                  .length <= 0
+              }
               onClick={() => {
-                myCharts.push(chartsData);
-                setMyCharts([...myCharts]);
-                allCharts.push({
-                  endPointTitle: endPoints.label,
-                  chartsData,
-                });
-                setChartsData(defaultChartsData);
-                localStorage.setItem("allApiCharts", JSON.stringify(allCharts));
-                setTimeout(() => {
-                  window.scrollTo({
-                    top: document.documentElement.scrollHeight,
-                    behavior: "smooth",
-                  });
-                });
+                addNewChart();
               }}
             >
               Add Chart
@@ -835,6 +851,7 @@ export default function Graph({
                 setChartsData(defaultChartsData);
                 localStorage.setItem("allApiCharts", JSON.stringify(newCharts));
               }}
+              disabled={myCharts.length <= 0}
             >
               Reset All
             </Button>

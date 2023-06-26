@@ -22,7 +22,6 @@ const BookInfo = (props) => {
     getNewPreview,
     generateImage,
     loading,
-    setAiFormData,
     setImagesIndex,
     setCoverImages,
   } = props;

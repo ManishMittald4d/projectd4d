@@ -13,8 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 import BaseService from "services/BaseService";
-import axios from "axios";
 import { analyticsData } from "mock/data/analyticsData";
+import { Alert, Notification, toast } from "components/ui";
 
 export default function ApiForm({ records, setRecords }) {
   const [requestData, setRequestData] = useState({
@@ -95,10 +95,23 @@ export default function ApiForm({ records, setRecords }) {
         data: data,
         headers: header,
       });
+      if (resp) {
+        toast.push(
+          <Notification title={"Success"} type="success">
+            api data fetched successfully
+          </Notification>
+        );
+      }
     } catch (err) {
       console.log("error", err);
+      toast.push(
+        <Notification title={"Error"} type="danger">
+          Error: Some issue on API side
+        </Notification>
+      );
     }
   };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -166,17 +179,10 @@ export default function ApiForm({ records, setRecords }) {
                   value={requestData.endpointUrl}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (requestData.endpointUrl.startsWith("http")) {
-                      setRequestData({
-                        ...requestData,
-                        endpointUrl: value,
-                      });
-                    } else {
-                      setRequestData({
-                        ...requestData,
-                        endpointUrl: `https://predev-api.readabilitytutor.com/API/v1/${value}`,
-                      });
-                    }
+                    setRequestData({
+                      ...requestData,
+                      endpointUrl: value,
+                    });
                   }}
                 />
               </Box>
@@ -455,6 +461,7 @@ export default function ApiForm({ records, setRecords }) {
               onClick={() => {
                 makeAPIRequest();
               }}
+              disabled={!requestData.endpointUrl}
             >
               Test
             </Button>
@@ -463,15 +470,36 @@ export default function ApiForm({ records, setRecords }) {
               onClick={() => {
                 const { header, data } = apiData();
                 delete header["Authorization"];
+                let newdata = requestData;
+
+                console.log(requestData.endpointUrl);
+
+                if (requestData.endpointUrl.trim().startsWith("http")) {
+                  newdata = {
+                    ...newdata,
+                  };
+                } else {
+                  newdata = {
+                    ...newdata,
+                    endpointUrl: `https://predev-api.readabilitytutor.com/API/v1/${requestData.endpointUrl}`,
+                  };
+                }
+
                 records.push({
-                  ...requestData,
+                  ...newdata,
                   headers: header,
                   body: data,
                 });
                 setRecords([...records]);
                 localStorage.setItem("apiRecords", JSON.stringify(records));
                 makeDefault();
+                toast.push(
+                  <Notification title={"Success"} type="success">
+                    api saved successfully
+                  </Notification>
+                );
               }}
+              disabled={!requestData.endpointUrl}
             >
               Save
             </Button>

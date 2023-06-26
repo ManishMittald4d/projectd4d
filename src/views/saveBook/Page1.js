@@ -41,78 +41,75 @@ const Page1 = (props) => {
   const [open, setOpen] = React.useState(false);
   const [CopyJSon, setCopyJSon] = React.useState(
     JSON.stringify({
-      Title: ["The Lost Ball", "1"],
-      Tags: ["Ball", "Kids"],
-      Genre: ["Fiction", "Short Story"],
-      Grade: "1",
+      Title: ["The Dog, the Cat, and the Duck"],
+      Tags: ["Kindergarten", "PreK", "Animals"],
+      Genre: ["Animals", "Friendship"],
+      Grade: 3,
       Story: [
         {
           PageText:
-            "One sunny day, Timmy was playing with his red ball. He was rolling it around on the grass, having lots of fun.",
+            "The dog, the cat, and the duck lived on a farm. They were best friends.",
           Questions: [
             {
-              Question: "What was Timmy playing with?",
-              Answer: "His red ball.",
+              Question: "What are the names of the three animals?",
+              Answer: "The dog, the cat, and the duck.",
             },
           ],
         },
         {
           PageText:
-            "Suddenly, Timmy kicked the ball too hard. It went flying into the nearby bushes!",
+            "One day, they were playing in the barn. The dog ran after the cat. The cat chased the duck.",
           Questions: [
             {
-              Question: "Where did the ball go?",
-              Answer: "Into the bushes.",
+              Question: "What did the dog do to the cat?",
+              Answer: "The dog ran after the cat.",
             },
           ],
         },
         {
           PageText:
-            "Timmy looked for his ball by himself, but he couldn't find it. He asked his friend, Jack, for help. Jack suggested they look in the tall grass.",
+            'The duck quacked and said, "Let\'s play with the ball!" The dog and the cat stopped chasing each other and played with the ball.',
           Questions: [
             {
-              Question: "Who did Timmy ask for help?",
-              Answer: "His friend, Jack.",
-            },
-            {
-              Question: "Where did Jack suggest they look?",
-              Answer: "In the tall grass.",
+              Question: "What did the duck say to the dog and the cat?",
+              Answer: 'The duck said, "Let\'s play with the ball!"',
             },
           ],
         },
         {
           PageText:
-            "After a few minutes of searching, Jack found the ball hiding under a small bush. Timmy was very happy and grateful to his friend.",
+            "They had so much fun playing with the ball. They were all very happy.",
           Questions: [
             {
-              Question: "Who found the ball?",
-              Answer: "Jack found the ball.",
-            },
-            {
-              Question: "Where was the ball hiding?",
-              Answer: "Under a small bush.",
+              Question: "Were the dog, the cat, and the duck happy?",
+              Answer: "Yes, they were all very happy.",
             },
           ],
         },
         {
-          PageText:
-            "Timmy and Jack continued to play with the ball for the rest of the day. They made sure to be more careful this time!",
-          Questions: [
-            {
-              Question: "What did Timmy and Jack do for the rest of the day?",
-              Answer: "They played with the ball.",
-            },
-          ],
+          PageText: "The end.",
+          Questions: [],
         },
       ],
-      Vocabulary: ["Sunny", "Grass", "Bushes"],
-      SightWords: ["Ball", "Red", "Small"],
-      ARScore: 1.0,
-      LexileLevelMin: "100",
-      LexileLevelMax: "200",
+      Vocabulary: ["farm", "barn", "waddle", "quack"],
+      SightWords: [
+        "dog",
+        "cat",
+        "duck",
+        "run",
+        "play",
+        "chase",
+        "ball",
+        "throw",
+        "catch",
+        "happy",
+        "end",
+      ],
+      ARScore: 92,
+      LexileLevelMin: "400L",
+      LexileLevelMax: "500L",
     })
   );
-  // const [CopyJSon, setCopyJSon] = React.useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -159,18 +156,17 @@ const Page1 = (props) => {
           color: "#333",
         }}
       >
-        <Box>
+        <Box sx={{ padding: "0px 16px" }}>
           <Typography style={{ marginBlock: "20px 10px" }}>
             Enter the brief topic for your book or content.
           </Typography>
-          <Box>
+          <Box sx={{ width: { xs: "100%", md: "70%" } }}>
             <textarea
               style={{
-                width: "70%",
                 minHeight: "70px",
                 marginBottom: "16px",
               }}
-              className={` ${styles.previewData}`}
+              className={`${styles.previewData}`}
               value={pageData.topic}
               onChange={(e) => {
                 setPageData({
@@ -180,15 +176,9 @@ const Page1 = (props) => {
               }}
             ></textarea>
           </Box>
-          <Box
-            // className={styles.Boxborder}
-            sx={{
-              // border: "1px solid #333",
-              padding: "16px",
-            }}
-          >
+          <Box>
             <Grid container spacing={2}>
-              <Grid item xs={12} lg={7} style={{ paddingRight: "20px" }}>
+              <Grid item xs={12} lg={7}>
                 <Typography style={{ fontWeight: "bold", marginBottom: "8px" }}>
                   Scope form OpenAI
                 </Typography>
@@ -197,17 +187,17 @@ const Page1 = (props) => {
                 </Typography>
 
                 <Grid container spacing={2}>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     <Grid container spacing={2} style={{ paddingLeft: "16px" }}>
                       <Grid container>
-                        <Grid item xs={4}>
+                        <Grid item xs={5} sm={4}>
                           <Box mb={4}>
                             <Typography className={styles.inputLabel}>
                               Grade
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={7} sm={8}>
                           <Box mb={3}>
                             <select
                               className={styles.dropdown}
@@ -234,14 +224,14 @@ const Page1 = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container>
-                        <Grid item xs={4}>
+                        <Grid item xs={5} sm={4}>
                           <Box mb={4}>
                             <Typography className={styles.inputLabel}>
                               Local
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={7} sm={8}>
                           <Box mb={3}>
                             <select
                               className={styles.dropdown}
@@ -259,14 +249,14 @@ const Page1 = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container>
-                        <Grid item xs={4}>
+                        <Grid item xs={5} sm={4}>
                           <Box mb={3}>
                             <Typography className={styles.inputLabel}>
                               Lang
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={7} sm={8}>
                           <Box mb={3}>
                             <select
                               className={styles.dropdown}
@@ -284,10 +274,17 @@ const Page1 = (props) => {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item xs={6} style={{ paddingRight: "32px" }}>
-                    <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Grid
+                      container
+                      spacing={2}
+                      sx={{
+                        paddingRight: { xs: "0", md: "32px" },
+                        paddingLeft: "16px",
+                      }}
+                    >
                       <Grid container>
-                        <Grid item xs={4} md={6}>
+                        <Grid item xs={5} sm={4}>
                           <Box mb={4}>
                             <Typography
                               className={styles.inputLabel}
@@ -297,7 +294,7 @@ const Page1 = (props) => {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={8} md={6}>
+                        <Grid item xs={7} sm={8}>
                           <Box mb={3}>
                             <TextField
                               type="text"
@@ -315,7 +312,7 @@ const Page1 = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container>
-                        <Grid item xs={4} md={6}>
+                        <Grid item xs={5} sm={4}>
                           <Box mb={4}>
                             <Typography
                               className={styles.inputLabel}
@@ -325,7 +322,7 @@ const Page1 = (props) => {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={8} md={6}>
+                        <Grid item xs={7} sm={8}>
                           <Box mb={3}>
                             <TextField
                               type="text"
@@ -343,14 +340,14 @@ const Page1 = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container>
-                        <Grid item xs={4} md={6}>
+                        <Grid item xs={5} sm={4}>
                           <Box mb={3}>
                             <Typography className={styles.inputLabel}>
                               Senetence/Page
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={8} md={6}>
+                        <Grid item xs={7} sm={8}>
                           <Box mb={3}>
                             <TextField
                               type="number"
@@ -371,13 +368,17 @@ const Page1 = (props) => {
                   </Grid>
                 </Grid>
 
-                <Grid container spacing={2} style={{ paddingRight: "32px" }}>
-                  <Grid item xs={2}>
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{ paddingRight: { xs: "0", md: "32px" } }}
+                >
+                  <Grid item xs={3} sm={2}>
                     <Typography className={styles.inputLabel}>
                       Preview:
                     </Typography>
                   </Grid>
-                  <Grid item xs={10} style={{ paddingLeft: "8px" }}>
+                  <Grid item xs={9} sm={10} style={{ paddingLeft: "8px" }}>
                     {" "}
                     <textarea
                       id="instruction"
@@ -407,7 +408,7 @@ const Page1 = (props) => {
                         </Typography>
                       </Box>
                     </Grid>
-                    <Grid item xs={2} md={2} lg={3} xl={3}>
+                    <Grid item xs={3} sm={2} md={2} lg={3} xl={3}>
                       <Box>
                         <Typography className={styles.inputLabel}>
                           <Checkbox
@@ -437,7 +438,10 @@ const Page1 = (props) => {
                 </Grid>
 
                 <Grid container spacing={2}>
-                  <Grid container>
+                  <Grid
+                    container
+                    sx={{ marginTop: { xs: "12px", sm: "44px" } }}
+                  >
                     <Grid item xs={1} lg={1} md={1}>
                       <Box ml={1}>
                         <Checkbox
@@ -453,10 +457,10 @@ const Page1 = (props) => {
                         />
                       </Box>
                     </Grid>
-                    <Grid item xs={3} lg={4} md={4}>
+                    <Grid item xs={5} lg={4} md={4}>
                       <Box>
                         <Typography
-                          style={{ whiteSpace: "nowrap" }}
+                          style={{ whiteSpace: "nowrap", paddingLeft: "6px" }}
                           className={styles.inputLabel}
                         >
                           Comprehension
@@ -491,7 +495,7 @@ const Page1 = (props) => {
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container>
+                  <Grid container sx={{ height: "53px" }}>
                     <Grid item xs={1} md={1}>
                       <Box>
                         <Checkbox
@@ -507,22 +511,20 @@ const Page1 = (props) => {
                       </Box>
                     </Grid>
 
-                    <Grid item xs={3} md={4}>
+                    <Grid item xs={5} md={4}>
                       <Box mt={1}>
-                        <Typography className={styles.inputLabel}>
+                        <Typography
+                          className={styles.inputLabel}
+                          style={{ paddingLeft: "6px" }}
+                        >
                           Vocab words
                         </Typography>
                       </Box>
                     </Grid>
                     <Grid item xs={1} md={1}>
-                      <Typography
-                        className={styles.inputLabel}
-                        style={{ paddingRight: "6px" }}
-                      >
-                        Max
-                      </Typography>
+                      <Typography className={styles.inputLabel}>Max</Typography>
                     </Grid>
-                    <Grid item xs={5} md={6}>
+                    <Grid item xs={5} md={6} style={{ paddingLeft: "6px" }}>
                       <Box>
                         <TextField
                           type="number"
@@ -540,7 +542,7 @@ const Page1 = (props) => {
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container>
+                  <Grid container sx={{ height: "53px" }}>
                     <Grid item xs={1} md={1}>
                       <Box>
                         <Checkbox
@@ -555,22 +557,20 @@ const Page1 = (props) => {
                         />
                       </Box>
                     </Grid>
-                    <Grid item xs={3} md={4}>
+                    <Grid item xs={5} md={4}>
                       <Box mt={1}>
-                        <Typography className={styles.inputLabel}>
+                        <Typography
+                          className={styles.inputLabel}
+                          style={{ paddingLeft: "6px" }}
+                        >
                           Sight words
                         </Typography>
                       </Box>
                     </Grid>
                     <Grid item xs={1} md={1}>
-                      <Typography
-                        className={styles.inputLabel}
-                        style={{ paddingRight: "6px" }}
-                      >
-                        Max
-                      </Typography>
+                      <Typography className={styles.inputLabel}>Max</Typography>
                     </Grid>
-                    <Grid item xs={5} md={6}>
+                    <Grid item xs={5} md={6} style={{ paddingLeft: "6px" }}>
                       <Box>
                         <TextField
                           type="number"
@@ -591,7 +591,6 @@ const Page1 = (props) => {
                 </Grid>
 
                 <Box
-                  mt={5}
                   pt={3}
                   width={"100%"}
                   height={"auto"}

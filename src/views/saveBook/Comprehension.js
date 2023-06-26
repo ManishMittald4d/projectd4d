@@ -30,7 +30,7 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
           height: "auto",
         }}
       >
-        <Typography m={4} variant="h4">
+        <Typography my={4} variant="h4">
           Comprehension
         </Typography>
         <Box>

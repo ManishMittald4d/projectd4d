@@ -67,7 +67,12 @@ function SaveBook() {
   };
 
   const NoApiJson = (data) => {
-    const formResp = JSON.parse(data);
+    let formResp = JSON.parse(data);
+    formResp = {
+      ...formResp,
+      LexileLevelMin: formResp.LexileLevelMin.replace(/[^\d.-]/g, ""),
+      LexileLevelMax: formResp.LexileLevelMax.replace(/[^\d.-]/g, ""),
+    };
     setAiFormData(formResp);
 
     if (!!formResp && !!formResp.Story) {
