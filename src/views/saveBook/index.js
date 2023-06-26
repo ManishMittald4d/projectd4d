@@ -82,72 +82,72 @@ function SaveBook() {
   };
 
   const getFormData = async (formData, coverImageData, myImage) => {
-    setLoading(true);
-    const formReqData = formData;
-    const formResp = await axios.post(
-      "https://predev-api.readabilitytutor.com/AI/v1/ChatCompletions",
-      formReqData
-    );
-
-    const data = formResp.data.Data;
-    console.log("formResp", formResp);
-
-    if ((!data || formResp.status === 500) && apiCallNumber < 4) {
-      setApiCallNumber((prev) => prev + 1);
-
-      toast.push(
-        <Notification title={"Retrying"} type="warning">
-          Request is still in progress, please wait
-        </Notification>
+    try {
+      setLoading(true);
+      const formReqData = formData;
+      const formResp = await axios.post(
+        "https://predev-api.readabilitytutor.com/AI/v1/ChatCompletions",
+        formReqData
       );
-      setMessage("Request is still in progress, please wait");
-      alert("Request is still in progress, please wait");
 
-      return getFormData(formData, coverImageData, myImage);
-    } else if ((!data || formResp.status === 500) && apiCallNumber >= 4) {
-      toast.push(
-        <Notification title={"Error"} type="error">
-          Error: Some issue on API side, Please try again
-        </Notification>
-      );
-      setMessage(
-        "Error: Some issue on API side to generate book data, please try again"
-      );
-      alert(
-        "Some issue on API side to generate book data, please refresh the page and try again"
-      );
-    }
-    const response = data
-      ? {
-          ...data,
-          LexileLevelMin: data.LexileLevelMin.replace(/[^\d.-]/g, ""),
-          LexileLevelMax: data.LexileLevelMax.replace(/[^\d.-]/g, ""),
-        }
-      : data;
-    // setAiFormData(response);
-    setLoading(false);
-    let body = "";
-    let arr = [];
-    //    console.log(coverImageData);
-    formResp.data.Data.Story &&
-      formResp.data.Data.Story.map((item) => {
-        body += item.PageText;
-        let value = {
-          ...item,
-          illustration:
-            coverImageData !== undefined && coverImageData.illustration
-              ? myImage
-              : "",
-        };
-        arr.push(value);
+      const data = formResp.data.Data;
+      console.log("formResp", formResp);
+
+      if ((!data || formResp.status === 500) && apiCallNumber < 4) {
+        setApiCallNumber(apiCallNumber + 1);
+        toast.push(
+          <Notification title={"Retrying"} type="warning">
+            Request is still in progress, please wait
+          </Notification>
+        );
+        return getFormData(formData, coverImageData, myImage);
+      } else if ((!data || formResp.status === 500) && apiCallNumber >= 4) {
+        toast.push(
+          <Notification title={"Error"} type="error">
+            Error: Some issue on API side, Please try again
+          </Notification>
+        );
+        setMessage(
+          "Error: Some issue on API side to generate book data, please try again"
+        );
+        alert(
+          "Some issue on API side to generate book data, please refresh the page and try again"
+        );
+      }
+      const response = data
+        ? {
+            ...data,
+            LexileLevelMin: data.LexileLevelMin.replace(/[^\d.-]/g, ""),
+            LexileLevelMax: data.LexileLevelMax.replace(/[^\d.-]/g, ""),
+          }
+        : data;
+      // setAiFormData(response);
+      setLoading(false);
+      let body = "";
+      let arr = [];
+      //    console.log(coverImageData);
+      formResp.data.Data.Story &&
+        formResp.data.Data.Story.map((item) => {
+          body += item.PageText;
+          let value = {
+            ...item,
+            illustration:
+              coverImageData !== undefined && coverImageData.illustration
+                ? myImage
+                : "",
+          };
+          arr.push(value);
+        });
+      setAiFormData({
+        ...response,
+        Story: arr,
       });
-    setAiFormData({
-      ...response,
-      Story: arr,
-    });
 
-    getNewPreview(body);
-    setApiCallNumber(0);
+      getNewPreview(body);
+      setApiCallNumber(0);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const getbookData = async (coverImageData, formData) => {
@@ -198,8 +198,6 @@ function SaveBook() {
 
     let bookURL = "";
 
-    //    console.log(newImage);
-
     if (!!newImage && Array.isArray(newImage) && newImage.length > 0) {
       bookURL = newImage[0];
     } else if (!!newImage && newImage !== "") {
@@ -216,7 +214,6 @@ function SaveBook() {
 
     let fileName = bookURL;
 
-    //     console.log(bookURL);
     if (!!bookURL && bookURL !== "" && !Array.isArray(bookURL)) {
       fileName = bookURL?.split("/") || "";
       fileName = fileName?.pop();
@@ -252,7 +249,9 @@ function SaveBook() {
     //    console.log(Story);
     Story.length > 0 &&
       Story.forEach((story, index) => {
-        const title = `Chapter ${index + 1} : ${Title[0]}`;
+        const title = `Chapter ${index + 1} : ${
+          Array.isArray(Title) ? Title[0] : Title
+        }`;
 
         let storyDocList = null;
         let storyBookURL = "";
@@ -331,27 +330,35 @@ function SaveBook() {
     };
     setExportableJSON(json);
     setLoading(true);
-    const resp = await BaseService({
-      url: "/Book/ePubImportSave",
-      method: "POST",
-      data: JSON.stringify(json),
-      headers: {
-        "Content-Type": "application/json",
-        UserToken:
-          "DGj+TUGtk9GERZJMnE0yy7NKGyMtAnntAliL/ysncrTMy7AesbCuRm47xGRboG/yny1rw6YPkEpheA/xfrF4sKyLJvUjLObOXLkrHFqveuwzxq14iP/0daHWGrPT0bR5siVqO7SKbTDsCansW5+6kSSkQfKJ+V7VCLlyJMeKXWJgMdy4hhUad4Y6oqgQnXZVJJF3lZQrMwLWrgVQpFZvRNVygJ9q03ALLVnw71Pwrac=",
-        AcitivityIds: "1",
-        FingerPrintKey: "readability",
-      },
-    });
-
-    if (resp?.data?.Data?.BookId > 0) {
-      toast.push(
-        <Notification title={"Book Exported"} type="success">
-          Book Data Saved successfully
-        </Notification>
-      );
-      setMessage("Book Data Saved successfully");
-    } else {
+    try {
+      const resp = await BaseService({
+        url: "/Book/ePubImportSave",
+        method: "POST",
+        data: JSON.stringify(json),
+        headers: {
+          "Content-Type": "application/json",
+          UserToken:
+            "DGj+TUGtk9GERZJMnE0yy7NKGyMtAnntAliL/ysncrTMy7AesbCuRm47xGRboG/yny1rw6YPkEpheA/xfrF4sKyLJvUjLObOXLkrHFqveuwzxq14iP/0daHWGrPT0bR5siVqO7SKbTDsCansW5+6kSSkQfKJ+V7VCLlyJMeKXWJgMdy4hhUad4Y6oqgQnXZVJJF3lZQrMwLWrgVQpFZvRNVygJ9q03ALLVnw71Pwrac=",
+          AcitivityIds: "1",
+          FingerPrintKey: "readability",
+        },
+      });
+      if (resp?.data?.Data?.BookId > 0) {
+        toast.push(
+          <Notification title={"Book Exported"} type="success">
+            Book Data Saved successfully
+          </Notification>
+        );
+        setMessage("Book Data Saved successfully");
+      } else {
+        toast.push(
+          <Notification title={"Error"} type="error">
+            Error: Some issue on API side
+          </Notification>
+        );
+        setMessage("Error: Some issue on API side");
+      }
+    } catch (err) {
       toast.push(
         <Notification title={"Error"} type="error">
           Error: Some issue on API side
@@ -375,13 +382,12 @@ function SaveBook() {
   };
 
   const updateExportableJson = (newData) => {
-    //    console.log("newdata", newData);
-    if (newData.illustration) {
-      delete newData["illustration"];
+    console.log("newdata", newData);
+    if (newData.Story.illustration) {
+      delete newData.Story["illustration"];
     }
     setAiFormData({
-      ...aiFormData,
-      Story: newData,
+      ...newData,
     });
   };
 
@@ -409,6 +415,7 @@ function SaveBook() {
                 loading={loading}
                 setImagesIndex={setImagesIndex}
                 setCoverImages={setCoverImages}
+                updateExportableJson={updateExportableJson}
               />
               <Pages
                 pageData={aiFormData}

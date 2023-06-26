@@ -10,7 +10,6 @@ const appsRoute = [
     component: React.lazy(() => import("views/questionChat")),
     authority: [ADMIN, USER, TEACHER],
   },
-
   {
     key: "appsProject.kycForm",
     path: `/savebook`,

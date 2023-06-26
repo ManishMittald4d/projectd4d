@@ -24,6 +24,7 @@ const BookInfo = (props) => {
     loading,
     setImagesIndex,
     setCoverImages,
+    updateExportableJson,
   } = props;
 
   const [coverImage, setCoverImage] = useState(
@@ -57,23 +58,6 @@ const BookInfo = (props) => {
       body: body,
     });
   }, [aiFormData]);
-
-  //  useEffect(() => {
-  //    if (
-  //      coverImages !== undefined &&
-  //      coverImages !== null &&
-  //      coverImages.length > 0
-  //    ) {
-  //      setCoverImage(coverImages[0]);
-  //    }
-  //  }, [coverImages]);
-
-  // useEffect(() => {
-  //   setAiFormData(formData);
-  // }, [formData]);
-  //  console.log("coverImages");
-  //  console.log({ "coverImages222 ": coverImages });
-  //  console.log({ "coverImage2233333 ": coverImage });
 
   const getImageUrl = (e) => {
     var file = e.target.files[0];
@@ -156,10 +140,14 @@ const BookInfo = (props) => {
                     fullWidth
                     value={formData.Title}
                     onChange={(e) => {
-                      setFormData({
+                      const newData = {
                         ...formData,
                         Title: e.target.value,
+                      };
+                      setFormData({
+                        ...newData,
                       });
+                      updateExportableJson(newData);
                     }}
                     className={styles.boxInput}
                   />
@@ -179,10 +167,7 @@ const BookInfo = (props) => {
                 }}
                 className={styles.Boxborder}
                 style={{
-                  // borderColor:"  1px solid rgb(209 213 219 / var(--tw-border-opacity))",
-
                   width: "90%",
-                  // border: "1px solid #333",
                   height: "20vh",
                   padding: "4px",
                   borderRadius: "4px",
@@ -203,10 +188,18 @@ const BookInfo = (props) => {
                       fullWidth
                       value={formData.ARScore}
                       onChange={(e) => {
-                        setFormData({
+                        // setFormData({
+                        //   ...formData,
+                        //   ARScore: e.target.value,
+                        // });
+                        const newData = {
                           ...formData,
                           ARScore: e.target.value,
+                        };
+                        setFormData({
+                          ...newData,
                         });
+                        updateExportableJson(newData);
                       }}
                       className={styles.boxInput}
                     />
@@ -221,10 +214,18 @@ const BookInfo = (props) => {
                       fullWidth
                       value={formData.Genre}
                       onChange={(e) => {
-                        setFormData({
+                        // setFormData({
+                        //   ...formData,
+                        //   Genre: e.target.value,
+                        // });
+                        const newData = {
                           ...formData,
                           Genre: e.target.value,
+                        };
+                        setFormData({
+                          ...newData,
                         });
+                        updateExportableJson(newData);
                       }}
                       className={styles.boxInput}
                     />
@@ -241,10 +242,18 @@ const BookInfo = (props) => {
                       fullWidth
                       value={formData.LexileLevelMin}
                       onChange={(e) => {
-                        setFormData({
+                        // setFormData({
+                        //   ...formData,
+                        //   LexileLevelMin: e.target.value,
+                        // });
+                        const newData = {
                           ...formData,
                           LexileLevelMin: e.target.value,
+                        };
+                        setFormData({
+                          ...newData,
                         });
+                        updateExportableJson(newData);
                       }}
                       className={styles.boxInput}
                     />
@@ -258,10 +267,18 @@ const BookInfo = (props) => {
                       fullWidth
                       value={formData.Vocabulary}
                       onChange={(e) => {
-                        setFormData({
+                        // setFormData({
+                        //   ...formData,
+                        //   Vocabulary: e.target.value,
+                        // });
+                        const newData = {
                           ...formData,
                           Vocabulary: e.target.value,
+                        };
+                        setFormData({
+                          ...newData,
                         });
+                        updateExportableJson(newData);
                       }}
                       className={styles.boxInput}
                     />
@@ -277,10 +294,18 @@ const BookInfo = (props) => {
                       fullWidth
                       value={formData.LexileLevelMax}
                       onChange={(e) => {
-                        setFormData({
+                        // setFormData({
+                        //   ...formData,
+                        //   LexileLevelMax: e.target.value,
+                        // });
+                        const newData = {
                           ...formData,
                           LexileLevelMax: e.target.value,
+                        };
+                        setFormData({
+                          ...newData,
                         });
+                        updateExportableJson(newData);
                       }}
                       className={styles.boxInput}
                     />
@@ -295,10 +320,18 @@ const BookInfo = (props) => {
                       fullWidth
                       value={formData.SightWords}
                       onChange={(e) => {
-                        setFormData({
+                        // setFormData({
+                        //   ...formData,
+                        //   SightWords: e.target.value,
+                        // });
+                        const newData = {
                           ...formData,
                           SightWords: e.target.value,
+                        };
+                        setFormData({
+                          ...newData,
                         });
+                        updateExportableJson(newData);
                       }}
                       className={styles.boxInput}
                     />
@@ -308,7 +341,7 @@ const BookInfo = (props) => {
             </Box>
             <Box>
               <Grid container spacing={2}>
-                <Grid item xs={2}>
+                <Grid item xs={4} md={2}>
                   <Typography>Cover Image</Typography>
                   <Box>
                     <img
@@ -320,7 +353,7 @@ const BookInfo = (props) => {
                     />
                   </Box>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={8} md={4}>
                   <Typography className={styles.inputLabel}>
                     Cover Image:
                   </Typography>
@@ -334,21 +367,6 @@ const BookInfo = (props) => {
                     }}
                     className={styles.boxInput}
                   />
-                  {/* <Typography className={styles.inputLabel}>
-                    Art Theme:
-                  </Typography>
-                  <Box>
-                    <select
-                      className={styles.dropdown}
-                      style={{ width: "100%", marginTop: "8px" }}
-                    >
-                      <option></option>
-                      <option>Digital Art</option>
-                      <option>3D Render</option>
-                      <option>Water Color</option>
-                      <option>Oil Painting</option>
-                    </select>
-                  </Box> */}
                   <Box sx={{ marginBlock: "24px" }}>
                     <Button
                       style={{
@@ -374,7 +392,8 @@ const BookInfo = (props) => {
                       Regenerate
                     </Button>
                     <Button
-                      style={{
+                      sx={{
+                        marginTop: { xs: "0", sm: "0px" },
                         backgroundColor: "#40E0D0",
                         color: "white",
                       }}

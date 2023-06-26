@@ -178,7 +178,7 @@ const Page1 = (props) => {
           </Box>
           <Box>
             <Grid container spacing={2}>
-              <Grid item xs={12} lg={7}>
+              <Grid item xs={12} lg={8}>
                 <Typography style={{ fontWeight: "bold", marginBottom: "8px" }}>
                   Scope form OpenAI
                 </Typography>
@@ -279,7 +279,7 @@ const Page1 = (props) => {
                       container
                       spacing={2}
                       sx={{
-                        paddingRight: { xs: "0", md: "32px" },
+                        paddingRight: { xs: "0", md: "24px" },
                         paddingLeft: "16px",
                       }}
                     >
@@ -294,7 +294,12 @@ const Page1 = (props) => {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={7} sm={8}>
+                        <Grid
+                          item
+                          xs={7}
+                          sm={8}
+                          style={{ paddingLeft: "12px" }}
+                        >
                           <Box mb={3}>
                             <TextField
                               type="text"
@@ -322,7 +327,12 @@ const Page1 = (props) => {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={7} sm={8}>
+                        <Grid
+                          item
+                          xs={7}
+                          sm={8}
+                          style={{ paddingLeft: "12px" }}
+                        >
                           <Box mb={3}>
                             <TextField
                               type="text"
@@ -347,7 +357,12 @@ const Page1 = (props) => {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={7} sm={8}>
+                        <Grid
+                          item
+                          xs={7}
+                          sm={8}
+                          style={{ paddingLeft: "12px" }}
+                        >
                           <Box mb={3}>
                             <TextField
                               type="number"
@@ -371,7 +386,7 @@ const Page1 = (props) => {
                 <Grid
                   container
                   spacing={2}
-                  sx={{ paddingRight: { xs: "0", md: "32px" } }}
+                  sx={{ paddingRight: { xs: "0", md: "24px" } }}
                 >
                   <Grid item xs={3} sm={2}>
                     <Typography className={styles.inputLabel}>
@@ -392,7 +407,7 @@ const Page1 = (props) => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={12} lg={5} mt={2}>
+              <Grid item xs={12} lg={4} mt={2}>
                 <Grid container spacing={2} style={{ paddingLeft: "8px" }}>
                   <Grid container>
                     <Grid item xs={6} md={8} lg={6} xl={6}>
@@ -761,9 +776,8 @@ const Page1 = (props) => {
               <Button
                 style={{
                   marginTop: "40px",
-                  backgroundColor: "#40e0d0",
-                  color: "#fff",
                 }}
+                className={styles.primaryBtn}
                 onClick={() => {
                   if (!coverImageData.text && coverImageData.getCoverImage) {
                     return alert("Please enter image title first");
@@ -775,13 +789,18 @@ const Page1 = (props) => {
               >
                 Create with OpenAI-Raw Type
               </Button>
-              <Button
-                style={{
-                  marginTop: "40px",
-                  marginLeft: "10px",
-                  backgroundColor: "#40e0d0",
-                  color: "#fff",
+              <Box
+                sx={{
+                  width: { xs: "100%", sm: "0%" },
+                  display: { xs: "block", sm: "none" },
                 }}
+              />
+              <Button
+                sx={{
+                  marginTop: { xs: "16px", sm: "40px" },
+                  marginLeft: { xs: "0px", sm: "10px" },
+                }}
+                className={styles.primaryBtn}
                 onClick={() => {
                   handleClickOpen();
                 }}
@@ -792,6 +811,7 @@ const Page1 = (props) => {
           </Box>
         </Box>
       </Box>
+
       <Dialog
         open={open}
         onClose={handleClose}

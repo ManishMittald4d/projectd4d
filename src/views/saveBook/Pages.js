@@ -89,7 +89,7 @@ const Pages = ({
               </tr>
             </thead>
             <tbody>
-              {data ? (
+              {data && data.length > 0 ? (
                 data.map((item, index) => (
                   <tr key={index}>
                     <th>{index + 1}</th>
@@ -124,7 +124,12 @@ const Pages = ({
                         onClick={() => {
                           data.splice(index, 1);
                           setData([...data]);
-                          updateExportableJson(data);
+                          const newData = {
+                            ...pageData,
+                            Story: data,
+                          };
+                          updateExportableJson(newData);
+                          // updateExportableJson(data);
                         }}
                         style={{ color: "blue" }}
                       >
@@ -296,7 +301,12 @@ const Pages = ({
                       data.splice(editIndex, 1, item);
                       setData([...data]);
                       setEditing(false);
-                      updateExportableJson(data);
+                      const newData = {
+                        ...pageData,
+                        Story: data,
+                      };
+                      updateExportableJson(newData);
+                      // updateExportableJson(data);
                     }}
                   >
                     UPDATE

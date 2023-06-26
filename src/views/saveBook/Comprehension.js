@@ -74,7 +74,11 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
                           onClick={() => {
                             data[index].Questions.splice(i, 1);
                             setData([...data]);
-                            updateExportableJson(data);
+                            const newData = {
+                              ...pageData,
+                              Story: data,
+                            };
+                            updateExportableJson(newData);
                           }}
                           style={{ color: "blue" }}
                         >
@@ -171,7 +175,12 @@ const Comprehension = ({ pageData, updateExportableJson }) => {
                     data[editIndex[0]].Questions.splice(editIndex[1], 1, item);
                     setData([...data]);
                     setEditing(false);
-                    updateExportableJson(data);
+                    const newData = {
+                      ...pageData,
+                      Story: data,
+                    };
+                    updateExportableJson(newData);
+                    // updateExportableJson(data);
                   }}
                 >
                   UPDATE
