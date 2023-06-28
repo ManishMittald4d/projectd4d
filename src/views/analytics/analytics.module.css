@@ -123,18 +123,6 @@
 .pageEndBtn:disabled {
   opacity: 50%;
 }
-.tableWrapper {
-  overflow: auto;
-}
-
-/* .tableWrapper::-webkit-scrollbar {
-  width: 30px;
-  color: #000;
-}
-.tableWrapper::-webkit-scrollbar-track {
-  width: 30px;
-  color: #000;
-} */
 
 .table {
   width: 100%;
@@ -185,4 +173,8 @@ th:last-child {
 }
 .checkBox {
   margin-inline: 8px;
+}
+
+.endpointURlCell {
+  max-width: auto;
 }

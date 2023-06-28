@@ -22,6 +22,12 @@ const appsRoute = [
     component: React.lazy(() => import("views/analytics")),
     authority: [ADMIN, USER, TEACHER],
   },
+  {
+    key: "appsProject.textHighlight",
+    path: `/textHighlight`,
+    component: React.lazy(() => import("views/textHighlight")),
+    authority: [ADMIN],
+  },
   // ///////////////////
   {
     key: "appsProject.dashboard",

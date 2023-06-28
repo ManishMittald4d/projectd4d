@@ -1,6 +1,6 @@
 const appConfig = {
   apiPrefix: "/api",
-  authenticatedEntryPath: "/dashboard",
+  authenticatedEntryPath: window.location.pathname,
   //authenticatedEntryPath: '/home',
   unAuthenticatedEntryPath: "/sign-in",
   tourPath: "/app/account/kyc-form",

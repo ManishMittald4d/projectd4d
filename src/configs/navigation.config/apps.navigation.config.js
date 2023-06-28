@@ -247,6 +247,17 @@ const appsNavigationConfig = [
           },
         ],
       },
+      ////////////////////////////////
+      {
+        key: "appcrm.textHighlight",
+        path: "/textHighlight/",
+        title: "Speech to Text",
+        translateKey: "nav.appsCrm.textHighlight",
+        icon: "analytics",
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [ADMIN],
+        subMenu: [],
+      },
       // For questionchat
       {
         key: "appcrm.QuestionChat",
@@ -281,6 +292,7 @@ const appsNavigationConfig = [
         subMenu: [],
       },
 
+      // //////////////////////////////
       {
         key: "appcrm.books",
         path: `/books/`,

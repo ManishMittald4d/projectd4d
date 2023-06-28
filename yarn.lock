@@ -7642,6 +7642,11 @@ map-obj@^2.0.0:
   resolved "https://registry.npmjs.org/map-obj/-/map-obj-2.0.0.tgz"
   integrity sha512-TzQSV2DiMYgoF5RycneKVUzIa9bQsj/B3tTgsE3dOGqlzHnGIDaC7XBE7grnA+8kZPnfqSGFe95VHc2oc0VFUQ==
 
+mark.js@^8.11.1:
+  version "8.11.1"
+  resolved "https://registry.npmjs.org/mark.js/-/mark.js-8.11.1.tgz"
+  integrity sha512-1I+1qpDt4idfgLQG+BNWmrqku+7/2bi5nLf4YwF8y8zXvmfiTBY3PV3ZibfrjBueCByROpuBjLLFCajqkgYoLQ==
+
 match-sorter@^6.3.1:
   version "6.3.1"
   resolved "https://registry.npmjs.org/match-sorter/-/match-sorter-6.3.1.tgz"
@@ -9454,6 +9459,11 @@ react-loading-overlay@^1.0.1:
     emotion "^10.0.1"
     prop-types "^15.6.2"
     react-transition-group "^2.5.0"
+
+react-mark.js@^9.0.7:
+  version "9.0.7"
+  resolved "https://registry.npmjs.org/react-mark.js/-/react-mark.js-9.0.7.tgz"
+  integrity sha512-J6s42RiSNpirM8cMhbrCLRUJV/+tKWKdLJZBX/c5dVinIgHa885Izk3yUNnxW5bU2ZPK1IgR+jISqmcsPu+EdA==
 
 react-markdown@^6.0.3:
   version "6.0.3"

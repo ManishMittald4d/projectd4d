@@ -118,7 +118,7 @@ export default function ApiForm({ records, setRecords }) {
 
   return (
     <>
-      <Box className={styles.main}>
+      <Box className={styles.main} sx={{ width: { xs: "100%", sm: "80%" } }}>
         <Button
           className={styles.pageEndBtn}
           style={{
@@ -211,7 +211,13 @@ export default function ApiForm({ records, setRecords }) {
                 </Box>
               </Box>
             </Grid>
-            <Grid container xs={4} style={{ paddingInline: "8px" }}>
+            <Grid
+              container
+              xs={6}
+              sm={5}
+              md={4}
+              style={{ paddingInline: "8px" }}
+            >
               <Box className={`${styles.gridBox} ${styles.typeBox}`}>
                 <Grid container>
                   <Grid item xs={5}>
